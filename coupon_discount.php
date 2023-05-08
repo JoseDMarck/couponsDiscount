@@ -12,50 +12,48 @@
  * License URI:       https://github.com/JoseDMarck/couponsDiscount/blob/main/licence.txt
  */
 
+
+
+/*----------------------------------------------------------------
+// Evitar que se llame directamente
+/*----------------------------------------------------------------*/
 if (!defined('WPINC')) {
     die;
 }
 
-include_once ABSPATH . 'wp-admin/includes/plugin.php';
 
-
-
+/*----------------------------------------------------------------
+/* Cuando se activa llama a create_discount_table 
+/*----------------------------------------------------------------*/
 function activate_plugin_coupon_discount()
 {
     require_once plugin_dir_path(__FILE__) . 'includes/class-coupons-discount-activator.php';
     Coupons_Discount_Activator::activate();
 }
+register_activation_hook(__FILE__, 'activate_plugin_coupon_discount');
 
 
+/*----------------------------------------------------------------
+/*  Activa la opción de "Descuento sobre último ahorro" 
+/*  en tipo de descuento
+/*----------------------------------------------------------------*/
+function set_last_saving_discount()
+{
+    require_once plugin_dir_path(__FILE__) . 'includes/class-coupons-discount-activator.php';
+    $set_last_saving_discount = new Coupons_Discount_Activator();
+}
+add_action('init', 'set_last_saving_discount');
+
+
+/*----------------------------------------------------------------
+/*  Cuando se desactiva el plugin 
+/*----------------------------------------------------------------*/
 function deactivate_coupon_discount()
 {
     require_once plugin_dir_path(__FILE__) . 'includes/class-coupons-discount-deactivator.php';
     Plugin_Name_Deactivator::deactivate();
 }
-
-register_activation_hook(__FILE__, 'activate_plugin_coupon_discount');
 register_deactivation_hook(__FILE__, 'deactivate_coupon_discount');
-
-
-// // Evitar que el plugin sea llamado directamente
-// if (!defined('WPINC')) {
-//     die;
-// }
-
-
-/**
- * Register the "book" custom post type
- */
-function pluginprefix_setup_post_type()
-{
-    register_post_type('book', ['public' => true]);
-}
-add_action('init', 'pluginprefix_setup_post_type');
-
-
-/**
- * Activate the plugin.
- */
 
 
 
@@ -89,11 +87,17 @@ function my_custom_coupon_function($coupon_code)
 add_action('woocommerce_applied_coupon', 'my_custom_coupon_function', 10, 1);
 
 
-
-function custom_discount_type($discount_types)
+function test()
 {
-    $discount_types['discount_on_last_savings_porcent'] = __('Descuento sobre último ahorro', 'woocommerce');
-    return $discount_types;
+    echo "<script>alert('asdas')</script>";
 }
 
-add_filter('woocommerce_coupon_discount_types', 'custom_discount_type', 11, 1);
+//add_action('init', 'test');
+
+
+// function activate_plugin_coupon_discount()
+// {
+//     require_once plugin_dir_path(__FILE__) . 'includes/class-coupons-discount-activator.php';
+//     Coupons_Discount_Activator::activate();
+// }
+

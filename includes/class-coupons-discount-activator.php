@@ -1,25 +1,23 @@
 <?php
 
-
-class Coupons_Discount_Activator
+require_once 'class-coupons-discount.php';
+class Coupons_Discount_Activator extends CouponsDiscount
 {
+
+    public function __construct()
+    {
+        add_filter('woocommerce_coupon_discount_types', array($this, 'set_last_saving_discount'));
+    }
 
     public static function activate()
     {
-        // (new self)->create_post_type();
-
-
-
+        $createTable = new CouponsDiscount();
+        $createTable->create_discount_table();
     }
 
-    public function create_post_type()
+    public static function set_last_saving_discount($discount_types)
     {
-        echo "<script>
-        alert('asdas');
-        </script>";
-
+        $discount_types['discount_on_last_savings_porcent'] = __('Descuento sobre último ahorro', 'woocommerce');
+        return $discount_types;
     }
-
-
-
 }
