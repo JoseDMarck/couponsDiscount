@@ -1,11 +1,13 @@
 <?php
 
-
 class CouponsDiscount
 {
 
     public $last_total_order;
     public $user_id;
+
+    public $STATUS_COMPLETED = 'completed';
+    public $STATUS_PROCESSING = 'processing';
 
 
     public function __construct()
@@ -31,86 +33,91 @@ class CouponsDiscount
     public function get_last_order()
     {
 
-        // $user_id = get_current_user_id();
-        // $customer = new WC_Customer($user_id);
-        // $last_order = $customer->get_last_order();
-
-        // //$order = wc_get_order(141);
-        // print_r($last_order);
-        // print_r($last_order->get_total());
 
 
         $args = array(
+
             'post_type' => 'shop_order',
             'posts_per_page' => -1,
-            'meta_value' => get_current_user_id(),
-            'post_status' => array("wc-processing", "wc-completed"), //array("wc-processing", "wc-completed"),
+            'customer_id' => get_current_user_id(),
         );
 
+
         $orders = wc_get_orders($args);
+
 
         //print_r($orders);
 
         if ($orders) {
+
+            $orderFilters = array();
+            foreach ($orders as $order) {
+
+                if ($order->status === $this->STATUS_COMPLETED || $order->status === $this->STATUS_PROCESSING) {
+                    $orderFilters = array('status' => $order->status, 'total' => $order->total);
+                }
+            }
+
+            print_r($orderFilters);
+
             $last_order = reset($orders);
 
-            $order = wc_get_order($last_order->ID);
+            $orderInfo = new CouponsDiscount();
+            $orderInfo->last_total_order = $order->get_total();
+            $orderInfo->user_id = get_current_user_id();
 
-            echo $order->get_total();
 
 
+            //print_r($order->total);
 
-            //$this->update_last_order($this->last_total_order, $this->user_id);
+            //print_r($order->status);
+
+
+            //echo "<h1>Resultados $orderInfo->last_total_order</h1>";
+            return $orderInfo;
+
+        } else {
+            // echo "<h1>Sin Resultados</h1>";
+            return "No hay datos";
         }
 
-        // $args = array(
-        //     'numberposts' => 1,
-        //     'meta_key' => '_customer_user',
-        //     'meta_value' => get_current_user_id(),
-        //     'post_type' => wc_get_order_types(),
-        //     'post_status' => array_keys(wc_get_order_statuses()), //array("wc-processing", "wc-completed"),
-        // );
 
-        // $orders = get_posts($args);
+        // echo "<h4>total =>  $orderInfo->last_total_order </h4>";
+        // echo "<h4>user_id =>  $orderInfo->user_id </h4>";
 
 
 
-
-        // print_r($last_order);
-
-        // if ($orders) {
-        //     $last_order = reset($orders);
-
-        //     $order = wc_get_order($last_order->ID);
-
-        //     echo $order->get_total();
-
-
-
-        //     //$this->update_last_order($this->last_total_order, $this->user_id);
-        // }
     }
+
 
 
     public function check_is_order_exists()
     {
-        global $wpdb;
-        $table = 'wp_discount_quantities';
-        $result = $wpdb->get_results(
-            $wpdb->prepare(
-                "SELECT * FROM $table WHERE id_user = %s",
-                $this->user_id
-            )
-        );
 
-        if (!empty($result)) {
-            // Record for company name already exists, do update here
-            echo "<h1>Existe  $this->user_id </h1>";
-        } else {
-            // Record does not exist, do insert here
-            echo "<h1>No Existe  $this->user_id</h1>";
 
-        }
+        $order_info = $this->get_last_order();
+        // print_r($this->get_last_order());
+
+        echo "<h4>total check_is_order_exists() =>  $order_info->last_total_order </h4>";
+        echo "<h4>user_id check_is_order_exists() =>  $order_info->user_id </h4>";
+
+        // global $wpdb;
+        // $table = 'wp_discount_quantities';
+        // $result = $wpdb->get_results(
+        //     $wpdb->prepare(
+        //         "SELECT * FROM $table WHERE id_user = %s",
+        //         $this->user_id
+        //     )
+        // );
+
+        // if (!empty($result)) {
+        //     // Record for company name already exists, do update here
+        //     echo "<h1>Existe  $this->user_id </h1>";
+        // } else {
+        //     // Record does not exist, do insert here
+        //     echo "<h1>No Existe  $this->user_id</h1>";
+
+        // }
     }
     public function update_last_order($mount, $user_id)
     {

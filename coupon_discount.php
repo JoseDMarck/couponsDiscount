@@ -50,7 +50,22 @@ function get_last_client_order()
 
 
 }
-add_action('init', 'get_last_client_order', 10);
+add_action('init', 'get_last_client_order', 6);
+
+
+// /*----------------------------------------------------------------
+// /*  Revisar si la orden existe en DB
+// /*----------------------------------------------------------------*/
+function check_is_order_exists()
+{
+    require_once plugin_dir_path(__FILE__) . 'includes/class-coupons-discount.php';
+
+    $couponsDiscount = new CouponsDiscount();
+    $couponsDiscount->check_is_order_exists();
+}
+//add_action('init', 'check_is_order_exists', 10);
+
+
 
 
 /*----------------------------------------------------------------
@@ -69,17 +84,6 @@ function set_last_saving_discount()
 
 
 
-// /*----------------------------------------------------------------
-// /*  Revisar si la orden existe en DB
-// /*----------------------------------------------------------------*/
-function check_is_order_exists()
-{
-    require_once plugin_dir_path(__FILE__) . 'includes/class-coupons-discount.php';
-
-    $couponsDiscount = new CouponsDiscount();
-    $couponsDiscount->check_is_order_exists();
-}
-//add_action('init', 'check_is_order_exists', 2);
 
 
 
