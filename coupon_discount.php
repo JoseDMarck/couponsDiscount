@@ -29,8 +29,28 @@ function activate_plugin_coupon_discount()
 {
     require_once plugin_dir_path(__FILE__) . 'includes/class-coupons-discount-activator.php';
     Coupons_Discount_Activator::activate();
+
 }
 register_activation_hook(__FILE__, 'activate_plugin_coupon_discount');
+
+
+
+
+
+/*----------------------------------------------------------------
+/*  Obtener la ultima orden
+/*----------------------------------------------------------------*/
+function get_last_client_order()
+{
+    require_once plugin_dir_path(__FILE__) . 'includes/class-coupons-discount.php';
+
+
+    $couponsDiscount = new CouponsDiscount();
+    $couponsDiscount->get_last_order();
+
+
+}
+add_action('init', 'get_last_client_order', 10);
 
 
 /*----------------------------------------------------------------
@@ -41,19 +61,46 @@ function set_last_saving_discount()
 {
     require_once plugin_dir_path(__FILE__) . 'includes/class-coupons-discount-activator.php';
     $set_last_saving_discount = new Coupons_Discount_Activator();
+
 }
-add_action('init', 'set_last_saving_discount');
+//add_action('init', 'set_last_saving_discount');
+
+
+
+
+
+// /*----------------------------------------------------------------
+// /*  Revisar si la orden existe en DB
+// /*----------------------------------------------------------------*/
+function check_is_order_exists()
+{
+    require_once plugin_dir_path(__FILE__) . 'includes/class-coupons-discount.php';
+
+    $couponsDiscount = new CouponsDiscount();
+    $couponsDiscount->check_is_order_exists();
+}
+//add_action('init', 'check_is_order_exists', 2);
+
+
+
 
 
 /*----------------------------------------------------------------
-/*  Cuando se desactiva el plugin 
+/*  Actualizar en base de datos
 /*----------------------------------------------------------------*/
-function deactivate_coupon_discount()
+function update_last_order()
 {
-    require_once plugin_dir_path(__FILE__) . 'includes/class-coupons-discount-deactivator.php';
-    Plugin_Name_Deactivator::deactivate();
+    require_once plugin_dir_path(__FILE__) . 'includes/class-coupons-discount.php';
+    $couponsDiscount = new CouponsDiscount();
+    $couponsDiscount->update_last_order();
 }
-register_deactivation_hook(__FILE__, 'deactivate_coupon_discount');
+//add_action('init', 'update_last_order');
+
+
+
+
+
+
 
 
 
@@ -86,18 +133,14 @@ function my_custom_coupon_function($coupon_code)
 }
 add_action('woocommerce_applied_coupon', 'my_custom_coupon_function', 10, 1);
 
-
-function test()
+/*----------------------------------------------------------------
+/*  Cuando se desactiva el plugin 
+/*----------------------------------------------------------------*/
+function deactivate_coupon_discount()
 {
-    echo "<script>alert('asdas')</script>";
+    require_once plugin_dir_path(__FILE__) . 'includes/class-coupons-discount-deactivator.php';
+    Plugin_Name_Deactivator::deactivate();
+
+
 }
-
-//add_action('init', 'test');
-
-
-// function activate_plugin_coupon_discount()
-// {
-//     require_once plugin_dir_path(__FILE__) . 'includes/class-coupons-discount-activator.php';
-//     Coupons_Discount_Activator::activate();
-// }
-
+register_deactivation_hook(__FILE__, 'deactivate_coupon_discount');
