@@ -21,93 +21,79 @@ if (!defined('WPINC')) {
     die;
 }
 
-
 /*----------------------------------------------------------------
 /* Cuando se activa llama a create_discount_table 
 /*----------------------------------------------------------------*/
-function activate_plugin_coupon_discount()
+function ActivateTCPlugin()
 {
     require_once plugin_dir_path(__FILE__) . 'includes/class-coupons-discount-activator.php';
-    Coupons_Discount_Activator::activate();
+    TrendeeCouponsActivator::activate();
 
 }
-register_activation_hook(__FILE__, 'activate_plugin_coupon_discount');
+register_activation_hook(__FILE__, 'ActivateTCPlugin');
 
 
+/*----------------------------------------------------------------
+/*  Activa la opción de "Descuento sobre último ahorro" 
+/*----------------------------------------------------------------*/
+function activateSavingsOption()
+{
+    require_once plugin_dir_path(__FILE__) . 'includes/class-coupons-discount-activator.php';
+    $activateSavingsOption = new TrendeeCouponsActivator();
+
+}
+add_action('init', 'activateSavingsOption');
 
 
 
 /*----------------------------------------------------------------
 /*  Obtener la ultima orden
 /*----------------------------------------------------------------*/
-function get_last_client_order()
+function getLastClientOrder()
 {
     require_once plugin_dir_path(__FILE__) . 'includes/class-coupons-discount.php';
 
 
     $couponsDiscount = new CouponsDiscount();
-    $couponsDiscount->get_last_order();
+    $couponsDiscount->getLastClientOrder();
 
 
 }
-add_action('init', 'get_last_client_order', 6);
+add_action('init', 'getLastClientOrder', 6);
 
 
 // /*----------------------------------------------------------------
 // /*  Revisar si la orden existe en DB
 // /*----------------------------------------------------------------*/
-function check_is_order_exists()
+function checkIsOrderExists()
 {
     require_once plugin_dir_path(__FILE__) . 'includes/class-coupons-discount.php';
 
     $couponsDiscount = new CouponsDiscount();
-    $couponsDiscount->check_is_order_exists();
-}
-//add_action('init', 'check_is_order_exists', 10);
+    $couponsDiscount->checkIsOrderExists();
 
+    if (!empty($couponsDiscount->checkIsOrderExists())):
+        $couponsDiscount->updateLastClientOrder();
+    else:
+        $couponsDiscount->insertLastClientOrder();
+    endif;
 
-
-
-/*----------------------------------------------------------------
-/*  Activa la opción de "Descuento sobre último ahorro" 
-/*  en tipo de descuento
-/*----------------------------------------------------------------*/
-function set_last_saving_discount()
-{
-    require_once plugin_dir_path(__FILE__) . 'includes/class-coupons-discount-activator.php';
-    $set_last_saving_discount = new Coupons_Discount_Activator();
 
 }
-//add_action('init', 'set_last_saving_discount');
-
-
-
-
-
-
-
+add_action('init', 'checkIsOrderExists', 10);
 
 
 
 /*----------------------------------------------------------------
 /*  Actualizar en base de datos
 /*----------------------------------------------------------------*/
-function update_last_order()
+function updateLastClientOrder()
 {
     require_once plugin_dir_path(__FILE__) . 'includes/class-coupons-discount.php';
     $couponsDiscount = new CouponsDiscount();
-    $couponsDiscount->update_last_order();
+    $couponsDiscount->updateLastClientOrder();
 }
-//add_action('init', 'update_last_order');
-
-
-
-
-
-
-
-
-
+//add_action('init', 'updateLastClientOrder');
 
 function my_custom_coupon_function($coupon_code)
 {
@@ -140,11 +126,11 @@ add_action('woocommerce_applied_coupon', 'my_custom_coupon_function', 10, 1);
 /*----------------------------------------------------------------
 /*  Cuando se desactiva el plugin 
 /*----------------------------------------------------------------*/
-function deactivate_coupon_discount()
+function deactivateTCPlugin()
 {
     require_once plugin_dir_path(__FILE__) . 'includes/class-coupons-discount-deactivator.php';
-    Plugin_Name_Deactivator::deactivate();
+    TrendeeCouponsDeactivator::deactivate();
 
 
 }
-register_deactivation_hook(__FILE__, 'deactivate_coupon_discount');
+register_deactivation_hook(__FILE__, 'deactivateTCPlugin');

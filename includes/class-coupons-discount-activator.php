@@ -4,7 +4,7 @@
 require_once 'class-coupons-discount.php';
 
 
-class Coupons_Discount_Activator extends CouponsDiscount
+class TrendeeCouponsActivator extends CouponsDiscount
 {
     /*----------------------------------------------------------------
     /*  Constructor
@@ -14,7 +14,7 @@ class Coupons_Discount_Activator extends CouponsDiscount
 
     public function __construct()
     {
-        add_filter('woocommerce_coupon_discount_types', array($this, 'set_last_saving_discount'));
+        add_filter('woocommerce_coupon_discount_types', array($this, 'activateSavingsOption'));
 
     }
 
@@ -33,7 +33,7 @@ class Coupons_Discount_Activator extends CouponsDiscount
     /*  Agrega la opcion de 'Descuento sobre último ahorro'
     /*----------------------------------------------------------------*/
 
-    public static function set_last_saving_discount($discount_types)
+    public static function activateSavingsOption($discount_types)
     {
         $discount_types['discount_on_last_savings_porcent'] = __('Descuento sobre último ahorro', 'woocommerce');
         return $discount_types;

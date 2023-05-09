@@ -22,7 +22,7 @@
  */
 
 
-class Plugin_Name_Deactivator
+class TrendeeCouponsDeactivator
 {
 
     /**

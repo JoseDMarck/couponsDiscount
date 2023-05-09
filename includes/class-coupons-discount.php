@@ -13,6 +13,11 @@ class CouponsDiscount
     public function __construct()
     {
     }
+
+
+    /*----------------------------------------------------------------
+    /*  Crear tabla en DB
+    /*----------------------------------------------------------------*/
     public function create_discount_table()
     {
         global $wpdb;
@@ -21,7 +26,9 @@ class CouponsDiscount
         $sql = "CREATE TABLE  $table (
             id BIGINT(20) NOT NULL auto_increment,
             last_purchase_mount FLOAT(20) NOT NULL,
-            id_user int(11) NOT NULL,
+            id_user INT(11) NOT NULL,
+            accumulated_savings FLOAT(20) NOT NULL DEFAULT 0,
+            is_active INT(20) NOT NULL DEFAULT 0,
             UNIQUE KEY id (id)
         ) $charset_collate;";
 
@@ -30,108 +37,106 @@ class CouponsDiscount
         dbDelta($sql);
     }
 
-    public function get_last_order()
+    /*----------------------------------------------------------------
+    /*  Obtener la ultima orden de cliente
+    /*----------------------------------------------------------------*/
+    public function getLastClientOrder()
     {
-
-
-
         $args = array(
-
             'post_type' => 'shop_order',
             'posts_per_page' => -1,
             'customer_id' => get_current_user_id(),
         );
 
-
         $orders = wc_get_orders($args);
-
-
-        //print_r($orders);
-
-        if ($orders) {
+        if ($orders):
 
             $orderFilters = array();
-            foreach ($orders as $order) {
+            $i = 0;
 
-                if ($order->status === $this->STATUS_COMPLETED || $order->status === $this->STATUS_PROCESSING) {
-                    $orderFilters = array('status' => $order->status, 'total' => $order->total);
-                }
-            }
-
-            print_r($orderFilters);
-
-            $last_order = reset($orders);
+            foreach ($orders as $order):
+                if ($order->status === $this->STATUS_COMPLETED || $order->status === $this->STATUS_PROCESSING):
+                    $orderFilters[$i]["total"] = $order->total;
+                    $orderFilters[$i]["customer"] = get_current_user_id();
+                    $orderFilters[$i]["status"] = $order->status;
+                    $i++;
+                endif;
+            endforeach;
 
             $orderInfo = new CouponsDiscount();
-            $orderInfo->last_total_order = $order->get_total();
-            $orderInfo->user_id = get_current_user_id();
+            $orderInfo->last_total_order = $orderFilters[0]['total'];
+            $orderInfo->user_id = $orderFilters[0]['customer'];
 
+            if ($orderInfo->last_total_order):
+                return $orderInfo;
+            else:
+                return false;
+            endif;
 
-
-            //print_r($order->total);
-
-            //print_r($order->status);
-
-
-            //echo "<h1>Resultados $orderInfo->last_total_order</h1>";
-            return $orderInfo;
-
-        } else {
-            // echo "<h1>Sin Resultados</h1>";
-            return "No hay datos";
-        }
-
-
-        // echo "<h4>total =>  $orderInfo->last_total_order </h4>";
-        // echo "<h4>user_id =>  $orderInfo->user_id </h4>";
-
-
+        endif;
 
     }
 
 
-
-    public function check_is_order_exists()
+    /*----------------------------------------------------------------
+    /*  Revisar si la orden existe en la base de datos tabka (wp_discount_quantities)
+    /*----------------------------------------------------------------*/
+    public function checkIsOrderExists()
     {
 
+        $order_info = $this->getLastClientOrder();
 
-        $order_info = $this->get_last_order();
-        // print_r($this->get_last_order());
+        if ($order_info):
+            global $wpdb;
 
-        echo "<h4>total check_is_order_exists() =>  $order_info->last_total_order </h4>";
-        echo "<h4>user_id check_is_order_exists() =>  $order_info->user_id </h4>";
+            $result = $wpdb->get_results(
+                $wpdb->prepare(
+                    "SELECT * FROM wp_discount_quantities WHERE id_user = %s",
+                    $order_info->user_id
+                )
+            );
 
-        // global $wpdb;
-        // $table = 'wp_discount_quantities';
-        // $result = $wpdb->get_results(
-        //     $wpdb->prepare(
-        //         "SELECT * FROM $table WHERE id_user = %s",
-        //         $this->user_id
-        //     )
-        // );
+            return $result;
+            // if (!empty($result)):
+            //     $this->updateLastClientOrder();
+            // else:
+            //     $this->insertLastClientOrder();
+            // endif;
 
-        // if (!empty($result)) {
-        //     // Record for company name already exists, do update here
-        //     echo "<h1>Existe  $this->user_id </h1>";
-        // } else {
-        //     // Record does not exist, do insert here
-        //     echo "<h1>No Existe  $this->user_id</h1>";
+        endif;
 
-        // }
     }
-    public function update_last_order($mount, $user_id)
+
+    /*----------------------------------------------------------------
+    /*  Actualizar los nuevos datos de la ultima orden en la BD
+    /*----------------------------------------------------------------*/
+    public function updateLastClientOrder()
     {
 
         global $wpdb;
-        $table = 'wp_discount_quantities';
+        $order_info = $this->getLastClientOrder();
         $wpdb->update(
-            $table,
-            array('last_purchase_mount' => $mount),
-            array('id_user' => $user_id)
+            'wp_discount_quantities',
+            array('last_purchase_mount' => $order_info->last_total_order),
+            array('id_user' => $order_info->user_id)
         );
 
         require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
+    }
 
-
+    /*----------------------------------------------------------------
+    /*  Insertar los nuevos datos de la ultima orden en la BD
+    /*----------------------------------------------------------------*/
+    public function insertLastClientOrder()
+    {
+        global $wpdb;
+        $order_info = $this->getLastClientOrder();
+        $wpdb->insert(
+            'wp_discount_quantities',
+            array(
+                'last_purchase_mount' => $order_info->last_total_order,
+                'id_user' => $order_info->user_id,
+            )
+        );
     }
 }
