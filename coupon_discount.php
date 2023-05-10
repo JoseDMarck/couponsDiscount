@@ -13,10 +13,6 @@
  */
 
 
-
-/*----------------------------------------------------------------
-// Evitar que se llame directamente
-/*----------------------------------------------------------------*/
 if (!defined('WPINC')) {
     die;
 }
@@ -28,10 +24,8 @@ function ActivateTCPlugin()
 {
     require_once plugin_dir_path(__FILE__) . 'includes/class-coupons-discount-activator.php';
     TrendeeCouponsActivator::activate();
-
 }
 register_activation_hook(__FILE__, 'ActivateTCPlugin');
-
 
 /*----------------------------------------------------------------
 /*  Activa la opción de "Descuento sobre último ahorro" 
@@ -44,84 +38,54 @@ function activateSavingsOption()
 }
 add_action('init', 'activateSavingsOption');
 
-
-
 /*----------------------------------------------------------------
-/*  Obtener la ultima orden
+/*  Aplicar el cupon de descuento
 /*----------------------------------------------------------------*/
-function getLastClientOrder()
+function applyDiscountCoupon()
 {
     require_once plugin_dir_path(__FILE__) . 'includes/class-coupons-discount.php';
+    $CPD = new CouponsDiscount();
 
+    //1.- Verificar si el cliente tiene pedidos
+    if (!$CPD->clientHasOrder()):
+        return false;
+    endif;
 
-    $couponsDiscount = new CouponsDiscount();
-    $couponsDiscount->getLastClientOrder();
+    //2.- Obtener el ultimo pedido (completado o precesando) del cliente  
+    $CPD->getLastClientOrder();
 
-
-}
-add_action('init', 'getLastClientOrder', 6);
-
-
-// /*----------------------------------------------------------------
-// /*  Revisar si la orden existe en DB
-// /*----------------------------------------------------------------*/
-function checkIsOrderExists()
-{
-    require_once plugin_dir_path(__FILE__) . 'includes/class-coupons-discount.php';
-
-    $couponsDiscount = new CouponsDiscount();
-    $couponsDiscount->checkIsOrderExists();
-
-    if (!empty($couponsDiscount->checkIsOrderExists())):
-        $couponsDiscount->updateLastClientOrder();
+    //3.- Revisar si el usuario tiene datos en la tabla :
+    if (!$CPD->checkIsUserHasData()):
+        $CPD->insertLastClientOrder(); //Si no tiene datos insertarlos en DB
     else:
-        $couponsDiscount->insertLastClientOrder();
+        $CPD->updateLastClientOrder(); //Si ya tiene datos actualizarlos en DB
     endif;
 
 
+    //4.- Get Coupon Data
+
+    if (!$CPD->getCouponsData()):
+        return false;
+    endif;
+
+    print_r($CPD->getCouponsData());
+
+
+
+
+    echo "<h1>user ID: $CPD->userID</h1>";
+    echo "<h1>Total: $CPD->lastTotalOrder</h1>";
+    echo "<h1>next fucntion()</h1>";
+
 }
-add_action('init', 'checkIsOrderExists', 10);
 
 
 
-/*----------------------------------------------------------------
-/*  Actualizar en base de datos
-/*----------------------------------------------------------------*/
-function updateLastClientOrder()
-{
-    require_once plugin_dir_path(__FILE__) . 'includes/class-coupons-discount.php';
-    $couponsDiscount = new CouponsDiscount();
-    $couponsDiscount->updateLastClientOrder();
-}
-//add_action('init', 'updateLastClientOrder');
 
-function my_custom_coupon_function($coupon_code)
-{
 
-    global $wpdb;
-    $table_name = 'wp_discount_quantities';
-    $coupon = new WC_Coupon("dbarjzw3");
-    $type = $coupon->discount_type;
-    $amount = $coupon->amount;
-    $minimum_amount = $coupon->minimum_amount;
+add_action('init', 'applyDiscountCoupon');
 
-    // Check if the coupon code is the one you're interested in
-    if ($coupon_code == 'dbarjzw3') {
-        // Call your custom function here
 
-        $wpdb->update(
-            $table_name,
-            array('quantity' => 300),
-            array('id' => 3)
-        );
-
-        echo "<h1>Cupón aplicado</h1>";
-        echo $type;
-        echo $amount;
-        echo $minimum_amount;
-    }
-}
-add_action('woocommerce_applied_coupon', 'my_custom_coupon_function', 10, 1);
 
 /*----------------------------------------------------------------
 /*  Cuando se desactiva el plugin 
@@ -130,7 +94,5 @@ function deactivateTCPlugin()
 {
     require_once plugin_dir_path(__FILE__) . 'includes/class-coupons-discount-deactivator.php';
     TrendeeCouponsDeactivator::deactivate();
-
-
 }
 register_deactivation_hook(__FILE__, 'deactivateTCPlugin');
