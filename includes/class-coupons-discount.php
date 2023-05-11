@@ -192,6 +192,36 @@ class CouponsDiscount
         $this->userData = $result[0];
     }
 
+
+    /*----------------------------------------------------------------
+    /*  Revisamos si el cupon ha sido usado 
+    /*----------------------------------------------------------------*/
+
+    public function checkIsCouponUsed()
+    {
+        global $wpdb;
+        $result = $wpdb->get_results(
+            $wpdb->prepare(
+                'SELECT * FROM wp_discount_quantities
+                WHERE id_user = %s AND is_coupon_used = 1 AND coupon_code = %s',
+                $this->userID,
+                $this->userData->coupon_code
+            )
+        );
+
+        /*todo: Asignar la comporovacion con el id del cupon porque el 
+        usuario puede tener mas registros pero diferentes cupones
+        */
+
+        if (!empty($result)):
+            return true;
+        endif;
+
+        return false;
+    }
+
+
+
     /*----------------------------------------------------------------
     /*  Actualizar los nuevos datos de la ultima orden en la BD
     /*----------------------------------------------------------------*/
@@ -208,6 +238,8 @@ class CouponsDiscount
             ),
             array('id_user' => $this->userID)
         );
+
+        return $this->userData;
     }
 
     /*----------------------------------------------------------------
