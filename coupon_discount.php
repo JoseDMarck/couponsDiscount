@@ -58,32 +58,34 @@ function applyDiscountCoupon()
     if (!$CPD->checkIsUserHasData()):
         $CPD->insertLastClientOrder(); //Si no tiene datos insertarlos en DB
     else:
+        //setteamos user data
+        $CPD->setUserData();
+        // Actualizamos los datos en BD
         $CPD->updateLastClientOrder(); //Si ya tiene datos actualizarlos en DB
     endif;
 
 
     //4.- Get Coupon Data
-
     if (!$CPD->getCouponsData()):
         return false;
     endif;
 
-    print_r($CPD->getCouponsData());
 
 
+    //5.- Get Coupon Data
+    $getDiscount = $CPD->getCouponDiscount();
+    if (!$getDiscount):
+        return false;
+    endif;
 
-
-    echo "<h1>user ID: $CPD->userID</h1>";
-    echo "<h1>Total: $CPD->lastTotalOrder</h1>";
-    echo "<h1>next fucntion()</h1>";
+    //$CPD->updateDatabase();
+    //7,- Update Accumulated saving on DB
+    $CPD->updateLastClientOrder();
 
 }
 
 
-
-
-
-add_action('init', 'applyDiscountCoupon');
+add_action('init', 'applyDiscountCoupon', 10);
 
 
 

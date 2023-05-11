@@ -8,14 +8,14 @@ class CouponsDiscount
     public $accumulatedSavings;
     public $isCouponUsed;
     public $couponCode;
+    public $couponsData = array();
+    public $userData = array();
     public $STATUS_COMPLETED = 'completed';
     public $STATUS_PROCESSING = 'processing';
-
 
     public function __construct()
     {
     }
-
 
     /*----------------------------------------------------------------
     /*  Crear tabla en DB
@@ -45,7 +45,6 @@ class CouponsDiscount
     /*----------------------------------------------------------------*/
     public function clientHasOrder()
     {
-
         $args = array(
             'post_type' => 'shop_order',
             'posts_per_page' => -1,
@@ -92,7 +91,6 @@ class CouponsDiscount
         $this->setOrderData($clientOrder[0]['total'], $clientOrder[0]['customer']);
 
         return $orderInfo;
-
     }
 
     /*----------------------------------------------------------------
@@ -120,16 +118,14 @@ class CouponsDiscount
         if (!empty($result)):
             return true;
         endif;
-
     }
 
     /*----------------------------------------------------------------
-    /*  OBTENER LA INFORMACION DE CUPONES
+    /*  Obtener informacion de cupones
     /*----------------------------------------------------------------*/
 
     public function getCouponsData()
     {
-
         $couponLastSavin = array();
         $args = array(
             'post_type' => 'shop_coupon',
@@ -162,74 +158,56 @@ class CouponsDiscount
             return false;
         endif;
 
+        $this->setCouponData($couponLastSavin);
+
         return $couponLastSavin;
-
     }
 
     /*----------------------------------------------------------------
-    /*  Aplica el Coupon de descuento
+    /*  settear los datos del cupon
     /*----------------------------------------------------------------*/
-    public function applyDiscountCoupon()
+    public function setCouponData($coupon)
     {
-        // $get_order_data = $this->checkIsUserHasData();
-        // $couponGenerateDiscount = $this->doCouponOperations();
-        // $newAccumulatedVale = $get_order_data[0]->accumulated_savings + $couponGenerateDiscount;
-
-        // global $wpdb;
-        // $order_info = $this->getLastClientOrder();
-
-        // $wpdb->update(
-        //     'wp_discount_quantities',
-        //     array('accumulated_savings' => $newAccumulatedVale, 'is_coupon_used' => 1),
-        //     array('id_user' => $order_info->userID)
-        // );
-
-        echo "<h4>applyDiscountCoupon()</h4>";
-
+        $this->couponsData = $coupon;
     }
 
     /*----------------------------------------------------------------
-    /*  OBTENER LA INFORMACION DE CUPONES
+    /*  Obtener la informacion del usuario guardada en BD
     /*----------------------------------------------------------------*/
 
-    public function doCouponOperations()
+    public function setUserData()
     {
-        // $LastOrderTotal = $this->getLastClientOrder()->lastTotalOrder;
-        // $getOrderData = $this->checkIsUserHasData();
+        global $wpdb;
+        $result = $wpdb->get_results(
+            $wpdb->prepare(
+                "SELECT * FROM wp_discount_quantities WHERE id_user = %s",
+                $this->userID
+            )
+        );
 
+        /*todo: Asignar la comporovacion con el id del cupon porque el 
+        usuario puede tener mas registros pero diferentes cupones
+        */
 
-
-        // $couponData = $this->getCouponsData();
-        // $minimumCouponAmount = $couponData[0]['minimum_amount'];
-        // $discountAvailable = $couponData[0]['amount'];
-
-
-        // // //Si el último pedido es mayor a 
-        // // if ($LastOrderTotal >= $minimumCouponAmount):
-        // //     $totalDiscount = ($discountAvailable / 100) * $orderTotal;
-        // //     return $totalDiscount;
-        // // endif;
-
-        return true;
+        $this->userData = $result[0];
     }
-
-
-
 
     /*----------------------------------------------------------------
     /*  Actualizar los nuevos datos de la ultima orden en la BD
     /*----------------------------------------------------------------*/
     public function updateLastClientOrder()
     {
-
         global $wpdb;
         $wpdb->update(
             'wp_discount_quantities',
-            array('last_purchase_mount' => $this->lastTotalOrder),
+            array(
+                'last_purchase_mount' => $this->lastTotalOrder,
+                'accumulated_savings' => $this->userData->accumulated_savings,
+                'is_coupon_used' => $this->userData->is_coupon_used,
+                'coupon_code' => $this->userData->coupon_code,
+            ),
             array('id_user' => $this->userID)
         );
-
-        require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
     }
 
     /*----------------------------------------------------------------
@@ -247,34 +225,41 @@ class CouponsDiscount
         );
     }
 
-
     /*----------------------------------------------------------------
-    /*  ASIGNAR CUPON USADO
+    /*  OBTENER LA INFORMACION DE CUPONES
     /*----------------------------------------------------------------*/
 
-    public function assignUsedCoupon()
+    public function getCouponDiscount()
     {
-        //$order_info = $this->getLastClientOrder();
-        // $order_info->userID,
-        $coupon_id = 133;
 
-        $user_id = 1;
+        $couponData = $this->couponsData;
+        $minimumCouponAmount = $couponData[0]['minimum_amount']; //  $400
+        $discountAvailable = $couponData[0]['amount']; // 10% minimun
+        $couponCode = $couponData[0]['name']; // 10% minimun
+        $accumulatedSavings = $this->userData->accumulated_savings; // $200
 
-        // Get the current _used_by value for the coupon
-        $used_by = get_post_meta($coupon_id, '_used_by', true);
+        //Si el último pedido es mayor al monto minimo permitido en el cupon 
+        if ($this->lastTotalOrder < $minimumCouponAmount):
+            return false;
+        endif;
 
-        // Convert the _used_by value into an array of user IDs
-        $used_by_array = explode(',', $used_by);
+        // Si no tiene ahorro acumulado termina el proceso
+        if ($accumulatedSavings === 0):
+            return false;
+        endif;
 
-        // Add the new user ID to the _used_by array
-        $used_by_array[] = $user_id;
+        //Operaciones: Aplicar 10% (discountAvailable) sobre mi ultimo ahorro (accumulatedSavings)
+        $obtainedDiscount = ($discountAvailable / 100) * $accumulatedSavings; //(10/100)*200
 
-        // Convert the _used_by array back into a comma-separated string
-        $new_used_by = implode(',', $used_by_array);
+        //Sumar el descuento obtenido a mi ahorro acumulado 
+        $discountApply = $obtainedDiscount + $accumulatedSavings;
 
-        // Update the _used_by meta data for the coupon with the new value
-        update_post_meta($coupon_id, '_used_by', $new_used_by);
+        //Actualizar objeto de user 
+        $this->userData->accumulated_savings = $discountApply;
+        $this->userData->is_coupon_used = 1;
+        $this->userData->coupon_code = $couponCode;
+
+        return true;
     }
-
 
 }
