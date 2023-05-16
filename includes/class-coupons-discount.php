@@ -5,7 +5,7 @@ class CouponsDiscount
 
     public $lastTotalOrder;
     public $userID;
-    public $accumulatedSavings;
+    public $accumulatedSavings = 0;
     public $isCouponUsed;
     public $couponCode;
     public $couponsData = array();
@@ -13,9 +13,16 @@ class CouponsDiscount
     public $STATUS_COMPLETED = 'completed';
     public $STATUS_PROCESSING = 'processing';
 
+    public $TESTVAR = 'testing';
+
     public function __construct()
     {
+
     }
+
+
+
+
 
     /*----------------------------------------------------------------
     /*  Crear tabla en DB
@@ -28,6 +35,7 @@ class CouponsDiscount
         $sql = "CREATE TABLE  $table (
             id BIGINT(20) NOT NULL auto_increment,
             last_purchase_mount FLOAT(20) NOT NULL,
+            tp_saldo FLOAT(20) NOT NULL,
             id_user INT(11) NOT NULL,
             accumulated_savings FLOAT(20) NOT NULL DEFAULT 0,
             is_coupon_used INT(20) NOT NULL DEFAULT 0,
@@ -101,6 +109,27 @@ class CouponsDiscount
         $this->lastTotalOrder = $total;
         $this->userID = $user_id;
     }
+
+    /*----------------------------------------------------------------
+    /*  Guardamamos en base de datos el ahorro acumulado
+    /*----------------------------------------------------------------*/
+    public function saveClientSaldoOnDB($saldo)
+    {
+        //echo "<h1>Saldo -->$saldo</h1>";
+        global $wpdb;
+        $wpdb->update(
+            'wp_discount_quantities',
+            array(
+
+                'tp_saldo' => $saldo,
+            ),
+            array('id_user' => 1)
+        );
+
+
+    }
+
+
 
     /*----------------------------------------------------------------
     /*  Revisar si la orden existe en la base de datos tabka (wp_discount_quantities)
@@ -190,6 +219,8 @@ class CouponsDiscount
         */
 
         $this->userData = $result[0];
+
+
     }
 
 
@@ -264,11 +295,18 @@ class CouponsDiscount
     public function getCouponDiscount()
     {
 
+
+
+
         $couponData = $this->couponsData;
         $minimumCouponAmount = $couponData[0]['minimum_amount']; //  $400
         $discountAvailable = $couponData[0]['amount']; // 10% minimun
         $couponCode = $couponData[0]['name']; // 10% minimun
-        $accumulatedSavings = $this->userData->accumulated_savings; // $200
+        $tp_saldo = $this->userData->tp_saldo; // $200
+        $accumulatedSavings = $this->userData->accumulated_savings + $tp_saldo; // $200
+
+
+        print_r($this->userData);
 
         //Si el último pedido es mayor al monto minimo permitido en el cupon 
         if ($this->lastTotalOrder < $minimumCouponAmount):
@@ -276,7 +314,7 @@ class CouponsDiscount
         endif;
 
         // Si no tiene ahorro acumulado termina el proceso
-        if ($accumulatedSavings === 0):
+        if ($tp_saldo === 0):
             return false;
         endif;
 
@@ -286,10 +324,12 @@ class CouponsDiscount
         //Sumar el descuento obtenido a mi ahorro acumulado 
         $discountApply = $obtainedDiscount + $accumulatedSavings;
 
+
         //Actualizar objeto de user 
         $this->userData->accumulated_savings = $discountApply;
         $this->userData->is_coupon_used = 1;
         $this->userData->coupon_code = $couponCode;
+
 
         return true;
     }
