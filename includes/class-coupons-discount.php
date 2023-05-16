@@ -295,9 +295,6 @@ class CouponsDiscount
     public function getCouponDiscount()
     {
 
-
-
-
         $couponData = $this->couponsData;
         $minimumCouponAmount = $couponData[0]['minimum_amount']; //  $400
         $discountAvailable = $couponData[0]['amount']; // 10% minimun
@@ -305,8 +302,6 @@ class CouponsDiscount
         $tp_saldo = $this->userData->tp_saldo; // $200
         $accumulatedSavings = $this->userData->accumulated_savings + $tp_saldo; // $200
 
-
-        print_r($this->userData);
 
         //Si el último pedido es mayor al monto minimo permitido en el cupon 
         if ($this->lastTotalOrder < $minimumCouponAmount):
@@ -329,6 +324,8 @@ class CouponsDiscount
         $this->userData->accumulated_savings = $discountApply;
         $this->userData->is_coupon_used = 1;
         $this->userData->coupon_code = $couponCode;
+
+
 
 
         return true;

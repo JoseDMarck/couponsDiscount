@@ -11,9 +11,9 @@ class ATPSaldo {
 
 	sendSaldoValue() {
 		jQuery.ajax({
-			url: ajax_object.ajax_url,
+			url: wp_object.ajax_url,
 			data: {
-				action: "save_client_on_db",
+				action: "save_saldo_on_db",
 				saldo: this.ATP_saldo,
 			},
 			success: function (response) {

@@ -42,31 +42,28 @@ add_action('init', 'activateSavingsOption');
 /*----------------------------------------------------------------
 /*  Ejecutamos el script para obtener el saldo del LocalStorage
 /*----------------------------------------------------------------*/
-function runScriptToGetLocalStorageSaldo()
+function getLocalStorageATPSaldo()
 {
 
     wp_enqueue_script('coupon_discount', plugins_url('/public/js/scripts.js', __FILE__), array('jquery'), '20200110');
 
     wp_localize_script(
         'coupon_discount',
-        'ajax_object',
+        'wp_object',
         array(
             'ajax_url' => admin_url('admin-ajax.php'),
-            'whatever' => ''
         )
     );
     wp_enqueue_script('coupon_discount');
 }
-add_action('init', 'runScriptToGetLocalStorageSaldo', 1);
-
+add_action('init', 'getLocalStorageATPSaldo', 1);
 
 
 /*----------------------------------------------------------------
-/*  Ejecutamos el script para obtener el saldo del LocalStorage
+/*  Guardamos el valor del ATP_saldo en la base de datos 
 /*----------------------------------------------------------------*/
-function save_client_on_db()
+function save_saldo_on_db()
 {
-
     if (isset($_REQUEST)) {
         require_once plugin_dir_path(__FILE__) . 'includes/class-coupons-discount.php';
         $CPD = new CouponsDiscount();
@@ -75,8 +72,7 @@ function save_client_on_db()
 
     wp_die();
 }
-add_action('wp_ajax_save_client_on_db', 'save_client_on_db', 1);
-
+add_action('wp_ajax_save_saldo_on_db', 'save_saldo_on_db', 1);
 
 
 /*----------------------------------------------------------------
@@ -115,7 +111,6 @@ function applyDiscountCoupon()
     /*----------------------------------------------------------------*/
     if ($checkIsUserHasData):
         $CPD->setUserData();
-
     endif;
 
 
@@ -153,13 +148,30 @@ function applyDiscountCoupon()
     /*----------------------------------------------------------------*/
     $CPD->updateLastClientOrder();
 
+    /*----------------------------------------------------------------
+    /* 7.- Llamamos saveSaldoOnLocalStorage() para guardar el local storage
+    /*----------------------------------------------------------------*/
+    $accumulated = $CPD->updateLastClientOrder()->accumulated_savings;
+    saveSaldoOnLocalStorage($accumulated);
+
 }
-//add_action('init', 'applyDiscountCoupon', 10);
-
-add_action('woocommerce_payment_complete', 'applyDiscountCoupon', 1);
-//add_action('woocommerce_thankyou', 'applyDiscountCoupon', 1);
+add_action('woocommerce_thankyou', 'applyDiscountCoupon', 10);
 
 
+function saveSaldoOnLocalStorage($saldo)
+{
+    wp_enqueue_script('coupon_discount_save_saldo', plugins_url('/public/js/save_saldo.js', __FILE__), array('jquery'), '20200110');
+
+    wp_localize_script(
+        'coupon_discount_save_saldo',
+        'wp_object',
+        array(
+            'ajax_url' => admin_url('admin-ajax.php'),
+            'newSaldo' => $saldo
+        )
+    );
+    wp_enqueue_script('coupon_discount_save_saldo');
+}
 
 
 
