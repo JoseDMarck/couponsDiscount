@@ -230,9 +230,6 @@ class CouponsDiscount
 
     public function checkIsCouponUsed()
     {
-
-
-
         global $wpdb;
         $result = $wpdb->get_results(
             $wpdb->prepare(
@@ -243,7 +240,7 @@ class CouponsDiscount
             )
         );
 
-        /*todo: Asignar la comporovacion con el id del cupon porque el 
+        /*todo: Asignar la comprobaacion con el id del cupon porque el 
         usuario puede tener mas registros pero diferentes cupones
         */
 
@@ -261,20 +258,6 @@ class CouponsDiscount
     /*----------------------------------------------------------------*/
     public function updateLastClientOrder()
     {
-
-        // echo "<h1>updateLastClientOrder()</h1>";
-
-        // print_r($this->userData);
-        // echo "<br>";
-        // echo $this->lastTotalOrder;
-        // echo "<br>";
-        // echo $this->userData->accumulated_savings;
-        // echo "<br>";
-        // echo $this->userData->is_coupon_used;
-        // echo "<br>";
-        // echo $this->userData->coupon_code;
-        // echo "<br>";
-        // echo get_current_user_id();
 
 
         global $wpdb;

@@ -35,7 +35,6 @@ function activateSavingsOption()
 {
     require_once plugin_dir_path(__FILE__) . 'includes/class-coupons-discount-activator.php';
     $activateSavingsOption = new TrendeeCouponsActivator();
-
 }
 
 /*----------------------------------------------------------------
@@ -65,7 +64,6 @@ function checkisUserHaveOrder()
     /*----------------------------------------------------------------*/
 
     $clientHasOrder = $CPD->clientHasOrder();
-
 
     if (!$clientHasOrder):
         return false;
