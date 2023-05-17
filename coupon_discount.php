@@ -38,51 +38,25 @@ function activateSavingsOption()
 
 }
 
-
 /*----------------------------------------------------------------
-/*  Ejecutamos el script para obtener el saldo del LocalStorage
+/*  Agregamos el shortcode html de alerta en el header  
 /*----------------------------------------------------------------*/
-add_action('init', 'getLocalStorageATPSaldo', 1);
-function getLocalStorageATPSaldo()
+
+add_action('wp_head', 'insert_alert_shortcode');
+function insert_alert_shortcode()
 {
-
-    wp_enqueue_script('coupon_discount', plugins_url('/public/js/scripts.js', __FILE__), array('jquery'), '20200110');
-
-    wp_localize_script(
-        'coupon_discount',
-        'wp_object',
-        array(
-            'ajax_url' => admin_url('admin-ajax.php'),
-        )
-    );
-    wp_enqueue_script('coupon_discount');
+    echo do_shortcode('[my_custom_shortcode]');
 }
 
 
-/*----------------------------------------------------------------
-/*  Guardamos el valor del ATP_saldo en la base de datos 
-/*----------------------------------------------------------------*/
-add_action('wp_ajax_save_saldo_on_db', 'save_saldo_on_db', 1);
-function save_saldo_on_db()
-{
-    if (isset($_REQUEST)) {
-        require_once plugin_dir_path(__FILE__) . 'includes/class-coupons-discount.php';
-        $CPD = new CouponsDiscount();
-        $CPD->saveClientSaldoOnDB($_REQUEST['saldo']);
-    }
-
-    wp_die();
-}
-
 
 /*----------------------------------------------------------------
-/*  Aplicar el cupon de descuento
+/*  Revisamos si el usario tiene pedidos
 /*----------------------------------------------------------------*/
 
-add_action('woocommerce_thankyou', 'applyDiscountCoupon', 10);
-function applyDiscountCoupon()
+add_action("init", 'checkisUserHaveOrder', 10);
+function checkisUserHaveOrder()
 {
-
     require_once plugin_dir_path(__FILE__) . 'includes/class-coupons-discount.php';
     $CPD = new CouponsDiscount();
 
@@ -91,6 +65,8 @@ function applyDiscountCoupon()
     /*----------------------------------------------------------------*/
 
     $clientHasOrder = $CPD->clientHasOrder();
+
+
     if (!$clientHasOrder):
         return false;
     endif;
@@ -115,52 +91,133 @@ function applyDiscountCoupon()
         $CPD->setUserData();
     endif;
 
-
     $checkIsCouponUsed = $CPD->checkIsCouponUsed();
     if ($checkIsCouponUsed):
         return false;
     endif;
 
     /*----------------------------------------------------------------
-    /* 3.- Si ya tiene datos se actualiza
+    /* 5.- Si ya tiene datos se actualiza
     /*----------------------------------------------------------------*/
 
     if ($checkIsUserHasData):
         $CPD->updateLastClientOrder(); //Si ya tiene datos actualizarlos en DB
     endif;
 
+}
+
+/*----------------------------------------------------------------
+/*  Ejecutamos el script para obtener el saldo del LocalStorage
+/*----------------------------------------------------------------*/
+add_action('init', 'getLocalStorageATPSaldo', 9);
+function getLocalStorageATPSaldo()
+{
+
+    wp_enqueue_script('coupon_discount', plugins_url('/public/js/scripts.js', __FILE__), array('jquery'), '20200110');
+
+    wp_localize_script(
+        'coupon_discount',
+        'wp_object',
+        array(
+            'ajax_url' => admin_url('admin-ajax.php'),
+        )
+    );
+    wp_enqueue_script('coupon_discount');
+}
+
+
+/*----------------------------------------------------------------
+/*  Guardamos el valor del ATP_saldo en la base de datos 
+/*----------------------------------------------------------------*/
+add_action('wp_ajax_save_saldo_on_db', 'save_saldo_on_db', 9);
+function save_saldo_on_db()
+{
+    if (isset($_REQUEST)) {
+        require_once plugin_dir_path(__FILE__) . 'includes/class-coupons-discount.php';
+        $CPD = new CouponsDiscount();
+        $CPD->saveClientSaldoOnDB($_REQUEST['saldo']);
+    }
+
+    wp_die();
+}
+
+
+
+/*----------------------------------------------------------------
+/*  Aplicar el cupon de descuento
+/*----------------------------------------------------------------*/
+
+add_action('woocommerce_thankyou', 'applyDiscountCoupon', 9);
+function applyDiscountCoupon()
+{
+
+
+    require_once plugin_dir_path(__FILE__) . 'includes/class-coupons-discount.php';
+    $CPD = new CouponsDiscount();
+
+
     /*----------------------------------------------------------------
-    /* 4.- Get Coupon Data
+    /* 1.- Setteamos los datos de usuario
+    /*----------------------------------------------------------------*/
+    $CPD->setUserData();
+
+
+
+    $checkIsCouponUsed = $CPD->checkIsCouponUsed();
+    if ($checkIsCouponUsed):
+        return false;
+    endif;
+
+
+    /*----------------------------------------------------------------
+    /* 2.- Get Coupon Data
+    /*----------------------------------------------------------------*/
+
+    $CPD->getLastClientOrder();
+
+    /*----------------------------------------------------------------
+    /* 2.- Get Coupon Data
     /*----------------------------------------------------------------*/
     $getCouponsData = $CPD->getCouponsData();
+
     if (!$getCouponsData):
         return false;
     endif;
 
+    $CPD->setCouponData($getCouponsData);
+
+
     /*----------------------------------------------------------------
-    /* 5.- Get Coupon Data
+    /* 3.- Aplicamos las operaciones para aplicar el cupon
     /*----------------------------------------------------------------*/
     $getDiscount = $CPD->getCouponDiscount();
+
     if (!$getDiscount):
         return false;
     endif;
 
     /*----------------------------------------------------------------
-    /* 6.- Update Accumulated saving on DB
+    /* 4.- Actualizamos los nuevos datos en la base de datos
     /*----------------------------------------------------------------*/
     $CPD->updateLastClientOrder();
 
     /*----------------------------------------------------------------
-    /* 7.- Llamamos saveSaldoOnLocalStorage() para guardar el local storage
+    /* 5.- Guardamos en el localstorage el nuevo valor
     /*----------------------------------------------------------------*/
     $accumulated = $CPD->updateLastClientOrder()->accumulated_savings;
-    saveSaldoOnLocalStorage($accumulated);
 
+    //print_r($CPD->userData);
+    $user_data = $CPD->userData;
 
+    saveSaldoOnLocalStorage($accumulated, $user_data);
 }
 
 
-function saveSaldoOnLocalStorage($saldo)
+
+/*----------------------------------------------------------------
+/* Guardamos Los nuevos valores en el localstorage
+/*----------------------------------------------------------------*/
+function saveSaldoOnLocalStorage($saldo, $user_data)
 {
     wp_enqueue_script('coupon_discount_save_saldo', plugins_url('/public/js/save_saldo.js', __FILE__), array('jquery'), '20200110');
 
@@ -169,28 +226,12 @@ function saveSaldoOnLocalStorage($saldo)
         'wp_object',
         array(
             'ajax_url' => admin_url('admin-ajax.php'),
-            'newSaldo' => $saldo
+            'newSaldo' => $saldo,
+            'userdata' => $user_data
         )
     );
     wp_enqueue_script('coupon_discount_save_saldo');
 }
-
-
-
-
-
-/*----------------------------------------------------------------
-/*  Cuando se desactiva el plugin 
-/*----------------------------------------------------------------*/
-register_deactivation_hook(__FILE__, 'deactivateTCPlugin');
-function deactivateTCPlugin()
-{
-    require_once plugin_dir_path(__FILE__) . 'includes/class-coupons-discount-deactivator.php';
-    TrendeeCouponsDeactivator::deactivate();
-}
-
-
-
 
 /**
  * Register and enqueue a custom stylesheet in the WordPress admin.
@@ -222,8 +263,15 @@ function my_custom_shortcode()
 }
 
 
-add_action('wp_head', 'insert_alert_shortcode');
-function insert_alert_shortcode()
+
+
+
+/*----------------------------------------------------------------
+/*  Cuando se desactiva el plugin 
+/*----------------------------------------------------------------*/
+register_deactivation_hook(__FILE__, 'deactivateTCPlugin');
+function deactivateTCPlugin()
 {
-    echo do_shortcode('[my_custom_shortcode]');
+    require_once plugin_dir_path(__FILE__) . 'includes/class-coupons-discount-deactivator.php';
+    TrendeeCouponsDeactivator::deactivate();
 }

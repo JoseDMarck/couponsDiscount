@@ -34,12 +34,14 @@ class CouponsDiscount
         $table = 'wp_discount_quantities';
         $sql = "CREATE TABLE  $table (
             id BIGINT(20) NOT NULL auto_increment,
+            id_user INT(11) NOT NULL,
             last_purchase_mount FLOAT(20) NOT NULL,
             tp_saldo FLOAT(20) NOT NULL,
-            id_user INT(11) NOT NULL,
             accumulated_savings FLOAT(20) NOT NULL DEFAULT 0,
             is_coupon_used INT(20) NOT NULL DEFAULT 0,
-            coupon VARCHAR(40) NOT NULL,
+            coupon_code VARCHAR(40) NOT NULL,
+            coupon_value VARCHAR(40) NOT NULL DEFAULT 0,
+            coupon_type VARCHAR(40) NOT NULL,
             UNIQUE KEY id (id)
         ) $charset_collate;";
 
@@ -61,6 +63,7 @@ class CouponsDiscount
         );
 
         $orders = wc_get_orders($args);
+
 
         if (!empty($orders)):
             return true;
@@ -115,7 +118,7 @@ class CouponsDiscount
     /*----------------------------------------------------------------*/
     public function saveClientSaldoOnDB($saldo)
     {
-        //echo "<h1>Saldo -->$saldo</h1>";
+
         global $wpdb;
         $wpdb->update(
             'wp_discount_quantities',
@@ -123,13 +126,11 @@ class CouponsDiscount
 
                 'tp_saldo' => $saldo,
             ),
-            array('id_user' => 1)
+            array('id_user' => get_current_user_id())
         );
 
 
     }
-
-
 
     /*----------------------------------------------------------------
     /*  Revisar si la orden existe en la base de datos tabka (wp_discount_quantities)
@@ -140,9 +141,11 @@ class CouponsDiscount
         $result = $wpdb->get_results(
             $wpdb->prepare(
                 "SELECT * FROM wp_discount_quantities WHERE id_user = %s",
-                $this->userID
+                get_current_user_id()
             )
         );
+
+        //print_r($result);
 
         if (!empty($result)):
             return true;
@@ -187,7 +190,6 @@ class CouponsDiscount
             return false;
         endif;
 
-        $this->setCouponData($couponLastSavin);
 
         return $couponLastSavin;
     }
@@ -210,7 +212,7 @@ class CouponsDiscount
         $result = $wpdb->get_results(
             $wpdb->prepare(
                 "SELECT * FROM wp_discount_quantities WHERE id_user = %s",
-                $this->userID
+                get_current_user_id()
             )
         );
 
@@ -219,8 +221,6 @@ class CouponsDiscount
         */
 
         $this->userData = $result[0];
-
-
     }
 
 
@@ -230,12 +230,15 @@ class CouponsDiscount
 
     public function checkIsCouponUsed()
     {
+
+
+
         global $wpdb;
         $result = $wpdb->get_results(
             $wpdb->prepare(
                 'SELECT * FROM wp_discount_quantities
                 WHERE id_user = %s AND is_coupon_used = 1 AND coupon_code = %s',
-                $this->userID,
+                get_current_user_id(),
                 $this->userData->coupon_code
             )
         );
@@ -258,6 +261,22 @@ class CouponsDiscount
     /*----------------------------------------------------------------*/
     public function updateLastClientOrder()
     {
+
+        // echo "<h1>updateLastClientOrder()</h1>";
+
+        // print_r($this->userData);
+        // echo "<br>";
+        // echo $this->lastTotalOrder;
+        // echo "<br>";
+        // echo $this->userData->accumulated_savings;
+        // echo "<br>";
+        // echo $this->userData->is_coupon_used;
+        // echo "<br>";
+        // echo $this->userData->coupon_code;
+        // echo "<br>";
+        // echo get_current_user_id();
+
+
         global $wpdb;
         $wpdb->update(
             'wp_discount_quantities',
@@ -266,8 +285,11 @@ class CouponsDiscount
                 'accumulated_savings' => $this->userData->accumulated_savings,
                 'is_coupon_used' => $this->userData->is_coupon_used,
                 'coupon_code' => $this->userData->coupon_code,
+                'coupon_value' => $this->userData->coupon_value,
+                'coupon_type' => $this->userData->coupon_type,
+
             ),
-            array('id_user' => $this->userID)
+            array('id_user' => get_current_user_id())
         );
 
         return $this->userData;
@@ -283,7 +305,7 @@ class CouponsDiscount
             'wp_discount_quantities',
             array(
                 'last_purchase_mount' => $this->lastTotalOrder,
-                'id_user' => $this->userID,
+                'id_user' => get_current_user_id(),
             )
         );
     }
@@ -300,6 +322,7 @@ class CouponsDiscount
         $discountAvailable = $couponData[0]['amount']; // 10% minimun
         $couponCode = $couponData[0]['name']; // 10% minimun
         $tp_saldo = $this->userData->tp_saldo; // $200
+        $coupon_type = $couponData[0]['type'];
         $accumulatedSavings = $this->userData->accumulated_savings + $tp_saldo; // $200
 
 
@@ -324,7 +347,8 @@ class CouponsDiscount
         $this->userData->accumulated_savings = $discountApply;
         $this->userData->is_coupon_used = 1;
         $this->userData->coupon_code = $couponCode;
-
+        $this->userData->coupon_value = $discountAvailable;
+        $this->userData->coupon_type = $coupon_type;
 
 
 
