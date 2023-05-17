@@ -1,12 +1,17 @@
 class SaldoLocalStorage {
 	constructor() {}
 
-	saveNewSaldo() {
+	saveNewSaldoOnLocalStorage() {
 		localStorage.setItem("ATP_saldo", wp_object.newSaldo);
-		alert("Se ha bonificado tu saldo...");
+		atp_localStorage = new SaldoLocalStorage();
+		atp_localStorage.displayBonusMessage();
+	}
+
+	displayBonusMessage() {
+		document.getElementById("gd__alert").style.display = "block";
 	}
 }
 
 atp_localStorage = new SaldoLocalStorage();
 
-atp_localStorage.saveNewSaldo();
+atp_localStorage.saveNewSaldoOnLocalStorage();

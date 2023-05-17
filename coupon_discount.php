@@ -20,28 +20,29 @@ if (!defined('WPINC')) {
 /*----------------------------------------------------------------
 /* Cuando se activa llama a create_discount_table 
 /*----------------------------------------------------------------*/
+register_activation_hook(__FILE__, 'ActivateTCPlugin');
 function ActivateTCPlugin()
 {
     require_once plugin_dir_path(__FILE__) . 'includes/class-coupons-discount-activator.php';
     TrendeeCouponsActivator::activate();
 }
-register_activation_hook(__FILE__, 'ActivateTCPlugin');
 
 /*----------------------------------------------------------------
 /*  Activa la opción de "Descuento sobre último ahorro" 
 /*----------------------------------------------------------------*/
+add_action('init', 'activateSavingsOption');
 function activateSavingsOption()
 {
     require_once plugin_dir_path(__FILE__) . 'includes/class-coupons-discount-activator.php';
     $activateSavingsOption = new TrendeeCouponsActivator();
 
 }
-add_action('init', 'activateSavingsOption');
 
 
 /*----------------------------------------------------------------
 /*  Ejecutamos el script para obtener el saldo del LocalStorage
 /*----------------------------------------------------------------*/
+add_action('init', 'getLocalStorageATPSaldo', 1);
 function getLocalStorageATPSaldo()
 {
 
@@ -56,12 +57,12 @@ function getLocalStorageATPSaldo()
     );
     wp_enqueue_script('coupon_discount');
 }
-add_action('init', 'getLocalStorageATPSaldo', 1);
 
 
 /*----------------------------------------------------------------
 /*  Guardamos el valor del ATP_saldo en la base de datos 
 /*----------------------------------------------------------------*/
+add_action('wp_ajax_save_saldo_on_db', 'save_saldo_on_db', 1);
 function save_saldo_on_db()
 {
     if (isset($_REQUEST)) {
@@ -72,12 +73,13 @@ function save_saldo_on_db()
 
     wp_die();
 }
-add_action('wp_ajax_save_saldo_on_db', 'save_saldo_on_db', 1);
 
 
 /*----------------------------------------------------------------
 /*  Aplicar el cupon de descuento
 /*----------------------------------------------------------------*/
+
+add_action('woocommerce_thankyou', 'applyDiscountCoupon', 10);
 function applyDiscountCoupon()
 {
 
@@ -154,8 +156,8 @@ function applyDiscountCoupon()
     $accumulated = $CPD->updateLastClientOrder()->accumulated_savings;
     saveSaldoOnLocalStorage($accumulated);
 
+
 }
-add_action('woocommerce_thankyou', 'applyDiscountCoupon', 10);
 
 
 function saveSaldoOnLocalStorage($saldo)
@@ -175,12 +177,53 @@ function saveSaldoOnLocalStorage($saldo)
 
 
 
+
+
 /*----------------------------------------------------------------
 /*  Cuando se desactiva el plugin 
 /*----------------------------------------------------------------*/
+register_deactivation_hook(__FILE__, 'deactivateTCPlugin');
 function deactivateTCPlugin()
 {
     require_once plugin_dir_path(__FILE__) . 'includes/class-coupons-discount-deactivator.php';
     TrendeeCouponsDeactivator::deactivate();
 }
-register_deactivation_hook(__FILE__, 'deactivateTCPlugin');
+
+
+
+
+/**
+ * Register and enqueue a custom stylesheet in the WordPress admin.
+ */
+add_action('init', 'wpdocs_enqueue_custom_admin_style');
+function wpdocs_enqueue_custom_admin_style()
+{
+    wp_register_style('custom_wp_admin_css', plugin_dir_url(__FILE__) . 'public/css/alert_modal.css', false, '1.0.0');
+    wp_enqueue_style('custom_wp_admin_css');
+}
+
+add_action('init', 'wpdocs_enqueue_magic_library');
+function wpdocs_enqueue_magic_library()
+{
+    wp_register_style('magic_library_css', plugin_dir_url(__FILE__) . 'public/css/magic.min.css', false, '1.0.0');
+    wp_enqueue_style('magic_library_css');
+}
+
+
+add_shortcode('my_custom_shortcode', 'my_custom_shortcode');
+function my_custom_shortcode()
+{
+
+    ob_start();
+    include plugin_dir_path(__FILE__) . 'public/php/alert_modal.php';
+    $modalAlert = ob_get_clean();
+
+    return $modalAlert;
+}
+
+
+add_action('wp_head', 'insert_alert_shortcode');
+function insert_alert_shortcode()
+{
+    echo do_shortcode('[my_custom_shortcode]');
+}
