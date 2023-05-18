@@ -17,6 +17,9 @@ if (!defined('ABSPATH')) {
     die('silent is golden...');
 }
 
+
+
+
 if (!class_exists('TrendeeCoupons')) {
 
     class TrendeeCoupons
@@ -29,6 +32,7 @@ if (!class_exists('TrendeeCoupons')) {
             define("PLUGIN_PATH", plugin_dir_path(__FILE__));
             define('TC__FILE__', __FILE__);
 
+
         }
         public function initialize()
         {
@@ -40,26 +44,31 @@ if (!class_exists('TrendeeCoupons')) {
         public function setTotalLastOrder($value)
         {
             $this->totalLastOrder = $value;
-            //echo $this->totalLastOrder;
+
 
         }
 
         public function getTotalLastOrder()
         {
+
             return $this->totalLastOrder;
         }
 
         public function getClientOrders()
         {
-            require PLUGIN_PATH . 'includes/client-orders.php';
-            //include PLUGIN_PATH . 'includes/client-data.php';
+            require_once PLUGIN_PATH . 'includes/client-orders.php';
+            require_once PLUGIN_PATH . 'includes/client-data.php';
+
+
+            require_once(ABSPATH . 'wp-load.php');
+            include_once(WP_PLUGIN_DIR . '/woocommerce/woocommerce.php');
 
 
 
+
+
+            //var_dump($this->getTotalLastOrder());
         }
-
-
-
 
 
     }
@@ -67,6 +76,11 @@ if (!class_exists('TrendeeCoupons')) {
     $TrendeeCoupons = new TrendeeCoupons();
     $TrendeeCoupons->initialize();
     $TrendeeCoupons->getClientOrders();
+
+    //print_r($TrendeeCoupons->getTotalLastOrder());
+
+
+
 
 
 
