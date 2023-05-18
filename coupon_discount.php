@@ -34,13 +34,11 @@ if (!class_exists('TrendeeCoupons')) {
         {
             require_once PLUGIN_PATH . 'includes/register_activation_hook.php';
             require_once PLUGIN_PATH . 'includes/register_coupons_types.php';
+            require_once PLUGIN_PATH . 'shortcodes/coupon_modal.php';
 
         }
 
-        public function createDataBase()
-        {
 
-        }
 
     }
 
@@ -50,18 +48,6 @@ if (!class_exists('TrendeeCoupons')) {
 
 
 
-
-
-
-/*----------------------------------------------------------------
-/*  Agregamos el shortcode html de alerta en el header  
-/*----------------------------------------------------------------*/
-
-add_action('wp_head', 'insert_alert_shortcode');
-function insert_alert_shortcode()
-{
-    echo do_shortcode('[my_custom_shortcode]');
-}
 
 
 
@@ -265,16 +251,6 @@ function wpdocs_enqueue_magic_library()
 }
 
 
-add_shortcode('my_custom_shortcode', 'my_custom_shortcode');
-function my_custom_shortcode()
-{
-
-    ob_start();
-    include plugin_dir_path(__FILE__) . 'public/php/gd__modal_coupon.php';
-    $modalAlert = ob_get_clean();
-
-    return $modalAlert;
-}
 
 
 
