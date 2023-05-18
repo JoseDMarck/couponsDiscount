@@ -17,26 +17,48 @@ if (!defined('ABSPATH')) {
     die('silent is golden...');
 }
 
-
-
 if (!class_exists('TrendeeCoupons')) {
 
     class TrendeeCoupons
     {
+
+        public $totalLastOrder = 0;
+
         public function __construct()
         {
             define("PLUGIN_PATH", plugin_dir_path(__FILE__));
             define('TC__FILE__', __FILE__);
 
         }
-
         public function initialize()
         {
             require_once PLUGIN_PATH . 'includes/register_activation_hook.php';
             require_once PLUGIN_PATH . 'includes/register_coupons_types.php';
             require_once PLUGIN_PATH . 'shortcodes/coupon_modal.php';
+        }
+
+        public function setTotalLastOrder($value)
+        {
+            $this->totalLastOrder = $value;
+            //echo $this->totalLastOrder;
 
         }
+
+        public function getTotalLastOrder()
+        {
+            return $this->totalLastOrder;
+        }
+
+        public function getClientOrders()
+        {
+            require PLUGIN_PATH . 'includes/client-orders.php';
+            //include PLUGIN_PATH . 'includes/client-data.php';
+
+
+
+        }
+
+
 
 
 
@@ -44,6 +66,12 @@ if (!class_exists('TrendeeCoupons')) {
 
     $TrendeeCoupons = new TrendeeCoupons();
     $TrendeeCoupons->initialize();
+    $TrendeeCoupons->getClientOrders();
+
+
+
+
+
 }
 
 
@@ -248,20 +276,4 @@ function wpdocs_enqueue_magic_library()
 {
     wp_register_style('magic_library_css', plugin_dir_url(__FILE__) . 'public/css/magic.min.css', false, '1.0.0');
     wp_enqueue_style('magic_library_css');
-}
-
-
-
-
-
-
-
-/*----------------------------------------------------------------
-/*  Cuando se desactiva el plugin 
-/*----------------------------------------------------------------*/
-register_deactivation_hook(__FILE__, 'deactivateTCPlugin');
-function deactivateTCPlugin()
-{
-    require_once plugin_dir_path(__FILE__) . 'includes/class-coupons-discount-deactivator.php';
-    TrendeeCouponsDeactivator::deactivate();
 }
