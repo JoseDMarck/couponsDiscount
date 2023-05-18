@@ -17,18 +17,31 @@ if (!defined('ABSPATH')) {
     die('silent is golden...');
 }
 
+
+
 if (!class_exists('TrendeeCoupons')) {
+
     class TrendeeCoupons
     {
         public function __construct()
         {
             define("PLUGIN_PATH", plugin_dir_path(__FILE__));
+            define('TC__FILE__', __FILE__);
+
         }
 
         public function initialize()
         {
-            echo "hello world";
+            require_once PLUGIN_PATH . 'includes/register_activation_hook.php';
+            require_once PLUGIN_PATH . 'includes/register_coupons_types.php';
+
         }
+
+        public function createDataBase()
+        {
+
+        }
+
     }
 
     $TrendeeCoupons = new TrendeeCoupons();
@@ -39,25 +52,6 @@ if (!class_exists('TrendeeCoupons')) {
 
 
 
-/*----------------------------------------------------------------
-/* Cuando se activa llama a create_discount_table 
-/*----------------------------------------------------------------*/
-// register_activation_hook(__FILE__, 'ActivateTCPlugin');
-// function ActivateTCPlugin()
-// {
-//     require_once plugin_dir_path(__FILE__) . 'includes/class-coupons-discount-activator.php';
-//     TrendeeCouponsActivator::activate();
-// }
-
-/*----------------------------------------------------------------
-/*  Activa la opción de "Descuento sobre último ahorro" 
-/*----------------------------------------------------------------*/
-add_action('init', 'activateSavingsOption');
-function activateSavingsOption()
-{
-    require_once plugin_dir_path(__FILE__) . 'includes/class-coupons-discount-activator.php';
-    $activateSavingsOption = new TrendeeCouponsActivator();
-}
 
 /*----------------------------------------------------------------
 /*  Agregamos el shortcode html de alerta en el header  
