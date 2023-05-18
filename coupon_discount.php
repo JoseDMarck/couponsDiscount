@@ -217,7 +217,7 @@ function applyDiscountCoupon()
 /*----------------------------------------------------------------*/
 function saveSaldoOnLocalStorage($saldo, $user_data)
 {
-    wp_enqueue_script('coupon_discount_save_saldo', plugins_url('/public/js/save_saldo.js', __FILE__), array('jquery'), '20200110');
+    wp_enqueue_script('coupon_discount_save_saldo', plugins_url('/public/js/gd__save_saldo.js', __FILE__), array('jquery'), '20200110');
 
     wp_localize_script(
         'coupon_discount_save_saldo',
@@ -237,7 +237,7 @@ function saveSaldoOnLocalStorage($saldo, $user_data)
 add_action('init', 'wpdocs_enqueue_custom_admin_style');
 function wpdocs_enqueue_custom_admin_style()
 {
-    wp_register_style('custom_wp_admin_css', plugin_dir_url(__FILE__) . 'public/css/alert_modal.css', false, '1.0.0');
+    wp_register_style('custom_wp_admin_css', plugin_dir_url(__FILE__) . 'public/css/gd__modal_coupon.css', false, '1.0.0');
     wp_enqueue_style('custom_wp_admin_css');
 }
 
@@ -254,7 +254,7 @@ function my_custom_shortcode()
 {
 
     ob_start();
-    include plugin_dir_path(__FILE__) . 'public/php/alert_modal.php';
+    include plugin_dir_path(__FILE__) . 'public/php/gd__modal_coupon.php';
     $modalAlert = ob_get_clean();
 
     return $modalAlert;
