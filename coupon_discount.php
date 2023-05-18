@@ -13,19 +13,41 @@
  */
 
 
-if (!defined('WPINC')) {
-    die;
+if (!defined('ABSPATH')) {
+    die('silent is golden...');
 }
+
+if (!class_exists('TrendeeCoupons')) {
+    class TrendeeCoupons
+    {
+        public function __construct()
+        {
+            define("PLUGIN_PATH", plugin_dir_path(__FILE__));
+        }
+
+        public function initialize()
+        {
+            echo "hello world";
+        }
+    }
+
+    $TrendeeCoupons = new TrendeeCoupons();
+    $TrendeeCoupons->initialize();
+}
+
+
+
+
 
 /*----------------------------------------------------------------
 /* Cuando se activa llama a create_discount_table 
 /*----------------------------------------------------------------*/
-register_activation_hook(__FILE__, 'ActivateTCPlugin');
-function ActivateTCPlugin()
-{
-    require_once plugin_dir_path(__FILE__) . 'includes/class-coupons-discount-activator.php';
-    TrendeeCouponsActivator::activate();
-}
+// register_activation_hook(__FILE__, 'ActivateTCPlugin');
+// function ActivateTCPlugin()
+// {
+//     require_once plugin_dir_path(__FILE__) . 'includes/class-coupons-discount-activator.php';
+//     TrendeeCouponsActivator::activate();
+// }
 
 /*----------------------------------------------------------------
 /*  Activa la opción de "Descuento sobre último ahorro" 
