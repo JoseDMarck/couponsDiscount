@@ -17,16 +17,13 @@ if (!defined('ABSPATH')) {
     die('silent is golden...');
 }
 
-
-
-
 if (!class_exists('TrendeeCoupons')) {
 
     class TrendeeCoupons
     {
 
         public static $totalLastOrder = 0;
-
+        public static $coupons = array();
 
         public function __construct()
         {
@@ -45,36 +42,23 @@ if (!class_exists('TrendeeCoupons')) {
             TrendeeCoupons::$totalLastOrder = $value;
         }
 
-        public function getTotalLastOrder()
+        public static function setCoupons($value)
         {
-
-            return $this->totalLastOrder;
+            TrendeeCoupons::$coupons = $value;
         }
 
-        public function getClientOrders()
+        public function getClientData()
         {
-
-            require_once PLUGIN_PATH . 'includes/client-orders.php';
-            require_once PLUGIN_PATH . 'includes/client-data.php';
-            //var_dump($this->getTotalLastOrder());
+            require_once PLUGIN_PATH . 'includes/client_orders.php';
+            require_once PLUGIN_PATH . 'includes/client_coupons.php';
+            require_once PLUGIN_PATH . 'includes/insert_client_data.php';
         }
-
 
     }
 
     $TrendeeCoupons = new TrendeeCoupons();
     $TrendeeCoupons->initialize();
-    $TrendeeCoupons->getClientOrders();
-    //echo TrendeeCoupons::$str;
-
-    //print_r($TrendeeCoupons->getTotalLastOrder());
-
-
-
-
-
-
-
+    $TrendeeCoupons->getClientData();
 
 }
 
