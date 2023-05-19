@@ -33,6 +33,7 @@ if (!class_exists('TrendeeCoupons')) {
         }
         public function initialize()
         {
+
             require_once PLUGIN_PATH . 'includes/register_activation_hook.php';
             require_once PLUGIN_PATH . 'includes/register_coupons_types.php';
             require_once PLUGIN_PATH . 'includes/client_atp_saldo.php';

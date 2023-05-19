@@ -5,8 +5,11 @@ function insertClientData()
 {
     $coupons = TrendeeCoupons::$coupons;
 
-    foreach ($coupons as $coupon) {
+    if (empty($coupons)):
+        return false;
+    endif;
 
+    foreach ($coupons as $coupon) {
         $couponCode = $coupon["code"];
         $haveCoupon = checkIsUserHasCoupon($couponCode);
 
@@ -44,9 +47,6 @@ function inserUserInfo($coupon)
     if (get_current_user_id() > 0):
         global $wpdb;
         $totalLastOrder = TrendeeCoupons::$totalLastOrder;
-
-        echo "ATP Saldo";
-        echo $atp_saldo = TrendeeCoupons::$atp_saldo;
 
         $wpdb->insert(
             'wp_coupons_data',
