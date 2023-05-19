@@ -13,7 +13,7 @@ class ATPSaldo {
 		jQuery.ajax({
 			url: wp_object.ajax_url,
 			data: {
-				action: "save_saldo_on_db",
+				action: "set_atp_saldo",
 				saldo: this.ATP_saldo,
 			},
 			success: function (response) {

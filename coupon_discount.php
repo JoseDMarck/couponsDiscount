@@ -24,6 +24,7 @@ if (!class_exists('TrendeeCoupons')) {
 
         public static $totalLastOrder = 0;
         public static $coupons = array();
+        public static $atp_saldo;
 
         public function __construct()
         {
@@ -34,6 +35,7 @@ if (!class_exists('TrendeeCoupons')) {
         {
             require_once PLUGIN_PATH . 'includes/register_activation_hook.php';
             require_once PLUGIN_PATH . 'includes/register_coupons_types.php';
+            require_once PLUGIN_PATH . 'includes/client_atp_saldo.php';
             require_once PLUGIN_PATH . 'shortcodes/coupon_modal.php';
         }
 
@@ -45,6 +47,11 @@ if (!class_exists('TrendeeCoupons')) {
         public static function setCoupons($value)
         {
             TrendeeCoupons::$coupons = $value;
+        }
+
+        public static function setATPSaldo($value)
+        {
+            TrendeeCoupons::$atp_saldo = $value;
         }
 
         public function getClientData()
@@ -122,40 +129,7 @@ function checkisUserHaveOrder()
 
 }
 
-/*----------------------------------------------------------------
-/*  Ejecutamos el script para obtener el saldo del LocalStorage
-/*----------------------------------------------------------------*/
-add_action('init', 'getLocalStorageATPSaldo', 9);
-function getLocalStorageATPSaldo()
-{
 
-    wp_enqueue_script('coupon_discount', plugins_url('/public/js/scripts.js', __FILE__), array('jquery'), '20200110');
-
-    wp_localize_script(
-        'coupon_discount',
-        'wp_object',
-        array(
-            'ajax_url' => admin_url('admin-ajax.php'),
-        )
-    );
-    wp_enqueue_script('coupon_discount');
-}
-
-
-/*----------------------------------------------------------------
-/*  Guardamos el valor del ATP_saldo en la base de datos 
-/*----------------------------------------------------------------*/
-add_action('wp_ajax_save_saldo_on_db', 'save_saldo_on_db', 9);
-function save_saldo_on_db()
-{
-    if (isset($_REQUEST)) {
-        require_once plugin_dir_path(__FILE__) . 'includes/class-coupons-discount.php';
-        $CPD = new CouponsDiscount();
-        $CPD->saveClientSaldoOnDB($_REQUEST['saldo']);
-    }
-
-    wp_die();
-}
 
 
 
