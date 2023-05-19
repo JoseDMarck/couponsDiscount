@@ -1,8 +1,8 @@
 <?php
 
 
-add_action('init', 'getClientOrders');
-function getClientOrders()
+add_action('init', 'getClientLastTotalOrder');
+function getClientLastTotalOrder()
 {
     $args = array(
         'post_type' => 'shop_order',
@@ -17,48 +17,34 @@ function getClientOrders()
         'post_status' => array('wc-processing', 'wc-completed')
     );
     $orders = get_posts($args);
+
     if (empty($orders)):
         return false;
     endif;
 
-    var_dump($orders[0]->ID);
-    // /$orders = wc_get_orders($args);
+
+    $order_id = $orders[0]->ID;
+    $order = wc_get_order($order_id);
+
+    TrendeeCoupons::setTotalLastOrder($order->total);
 
 
-    //getTotalFromLastOrder(237);
-
+    //echo TrendeeCoupons::$str;
+    //getTotalFromLastOrder($orders[0]->ID);
+    // require_once plugin_dir_path(TC__FILE__) . 'coupon_discount.php';
+    // TrendeeCoupons::setTotalLastOrder($test);
 }
 
 
-add_action(
-    'thesis_hook_before_post',
-    function ($test) {
 
-        // $TrendeeCoupons = new TrendeeCoupons();
-        // $TrendeeCoupons->setTotalLastOrder(99);
-    
-        // TrendeeCoupons::setTotalLastOrder($test);
-    }
-);
-
-
-do_action('thesis_hook_before_post', "holaWold");
-
-
-
-$this->setTotalLastOrder(99);
-echo $this->totalLastOrder;
-// add_action('thesis_hook_before_post', 'getTotalFromLastOrder', 10, 1);
-
-// $test = " hola mundo";
-
-
-
-
-function getTotalFromLastOrder($orderID)
+//add_action('init', 'getTotalFromLastOrder');
+function getTotalFromLastOrder()
 {
 
-    echo "getTotalFromLastOrder()";
+
+    echo TrendeeCoupons::$str;
+
+
 
 
     // $order = wc_get_order($orderID);
