@@ -25,6 +25,7 @@ if (!class_exists('TrendeeCoupons')) {
         public static $totalLastOrder = 0;
         public static $coupons = array();
         public static $atp_saldo;
+        public static $accumulatedSavings = 0;
 
         public function __construct()
         {
@@ -33,33 +34,23 @@ if (!class_exists('TrendeeCoupons')) {
         }
         public function initialize()
         {
-
             require_once PLUGIN_PATH . 'includes/register_activation_hook.php';
             require_once PLUGIN_PATH . 'includes/register_coupons_types.php';
             require_once PLUGIN_PATH . 'includes/client_atp_saldo.php';
             require_once PLUGIN_PATH . 'shortcodes/coupon_modal.php';
         }
 
-        public static function setTotalLastOrder($value)
-        {
-            TrendeeCoupons::$totalLastOrder = $value;
-        }
-
-        public static function setCoupons($value)
-        {
-            TrendeeCoupons::$coupons = $value;
-        }
-
-        public static function setATPSaldo($value)
-        {
-            TrendeeCoupons::$atp_saldo = $value;
-        }
-
         public function getClientData()
         {
             require_once PLUGIN_PATH . 'includes/client_orders.php';
             require_once PLUGIN_PATH . 'includes/client_coupons.php';
-            require_once PLUGIN_PATH . 'includes/insert_client_data.php';
+            require_once PLUGIN_PATH . 'includes/client_insert_data.php';
+            //require_once PLUGIN_PATH . 'includes/client_atp_saldo_db.php';
+        }
+
+        public function applyCoupons()
+        {
+            require_once PLUGIN_PATH . 'includes/coupon_apply.php';
         }
 
     }
@@ -67,6 +58,7 @@ if (!class_exists('TrendeeCoupons')) {
     $TrendeeCoupons = new TrendeeCoupons();
     $TrendeeCoupons->initialize();
     $TrendeeCoupons->getClientData();
+    $TrendeeCoupons->applyCoupons();
 
 }
 
@@ -145,38 +137,6 @@ function applyDiscountCoupon()
 
     require_once plugin_dir_path(__FILE__) . 'includes/class-coupons-discount.php';
     $CPD = new CouponsDiscount();
-
-
-    /*----------------------------------------------------------------
-    /* 1.- Setteamos los datos de usuario
-    /*----------------------------------------------------------------*/
-    $CPD->setUserData();
-
-
-
-    $checkIsCouponUsed = $CPD->checkIsCouponUsed();
-    if ($checkIsCouponUsed):
-        return false;
-    endif;
-
-
-    /*----------------------------------------------------------------
-    /* 2.- Get Coupon Data
-    /*----------------------------------------------------------------*/
-
-    $CPD->getLastClientOrder();
-
-    /*----------------------------------------------------------------
-    /* 2.- Get Coupon Data
-    /*----------------------------------------------------------------*/
-    $getCouponsData = $CPD->getCouponsData();
-
-    if (!$getCouponsData):
-        return false;
-    endif;
-
-    $CPD->setCouponData($getCouponsData);
-
 
     /*----------------------------------------------------------------
     /* 3.- Aplicamos las operaciones para aplicar el cupon

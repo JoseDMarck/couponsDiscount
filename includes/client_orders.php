@@ -25,5 +25,5 @@ function getClientLastTotalOrder()
     $order_id = $orders[0]->ID;
     $order = wc_get_order($order_id);
 
-    TrendeeCoupons::setTotalLastOrder($order->total);
+    TrendeeCoupons::$totalLastOrder = $order->total;
 }

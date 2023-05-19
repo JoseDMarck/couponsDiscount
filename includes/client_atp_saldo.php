@@ -30,7 +30,7 @@ function set_atp_saldo()
 {
     if (isset($_REQUEST)) {
 
-        TrendeeCoupons::setATPSaldo($_REQUEST['saldo']);
+        TrendeeCoupons::$atp_saldo = $_REQUEST['saldo'];
         $coupons = TrendeeCoupons::$coupons;
         if (empty($coupons)):
             return false;

@@ -16,6 +16,9 @@ function insertClientData()
         if (empty($haveCoupon)):
             inserUserInfo($coupon);
         endif;
+
+        $atpSaldo = $haveCoupon[0];
+        TrendeeCoupons::$atp_saldo = $atpSaldo->atp_saldo;
     }
 
 }

@@ -32,6 +32,5 @@ function getCouponsData()
         endif;
     }
 
-    TrendeeCoupons::setCoupons($couponLastSavin);
-
+    TrendeeCoupons::$coupons = $couponLastSavin;
 }
