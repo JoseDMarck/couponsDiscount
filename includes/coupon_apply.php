@@ -11,6 +11,8 @@ function getCouponDiscount()
 
     $currentCoupon = 0;
 
+    // print_r($coupons);
+
     foreach ($coupons as $coupon):
         $couponData = array(
             "minimum_ammount" => $coupon["minimum_amount"],
@@ -26,6 +28,7 @@ function getCouponDiscount()
         endif;
 
         calculateDiscount($couponData, $currentCoupon);
+
         $currentCoupon++;
 
     endforeach;
@@ -73,7 +76,9 @@ function calculateDiscount($coupon, $currentCoupon)
             "obtained_discount" => $obtainedDiscount,
             "atp_current_saldo" => $atp_current_saldo,
             "coupon_code" => $coupon["coupon_code"],
+            "coupon_type" => $coupon["coupon_type"],
             "is_coupon_used" => 1,
+            "discount_available" => $coupon["discount_available"]
         )
     );
 

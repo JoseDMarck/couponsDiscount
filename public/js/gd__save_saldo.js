@@ -1,36 +1,33 @@
 class SaldoLocalStorage {
 	constructor() {}
 
-	saveNewSaldoOnLocalStorage() {
-		localStorage.setItem("ATP_saldo", wp_object.newSaldo);
+	initialize() {
+		//localStorage.setItem("ATP_saldo", wp_object.newSaldo);
 
 		// localStorage.setItem("user_new_tp_saldo", wp_object.newSaldo);
 		// localStorage.setItem("user_new_tp_saldo", wp_object.newSaldo);
 		// localStorage.setItem("user_accumulated_savings", wp_object.newSaldo);
 
-		atp_localStorage = new SaldoLocalStorage();
-		atp_localStorage.displayBonusMessage();
-	}
+		console.log(wp_object.couponsApply);
 
-	displayBonusMessage() {
-		console.log(wp_object.userdata);
+		let generateSaldo = wp_object.generateSaldo;
+		let couponsApply = wp_object.couponsApply;
+		let formatDiscount = [];
 
-		let couponType = wp_object.userdata.coupon_type;
-		let couponaAcummulated = wp_object.userdata.accumulated_savings;
-		let couponValue = wp_object.userdata.coupon_value;
+		couponsApply.map((key) => {
+			console.log(key.discount_available);
+			formatDiscount.push(key.discount_available);
+			//document.getElementById("gd__atp_saldo").innerHTML = key.discount_available
+		});
 
-		couponType === "discount_on_last_savings_porcent"
-			? (couponValue = couponValue + "%")
-			: (couponValue = "$" + couponValue);
+		document.getElementById("gd__coupon_porcent").innerHTML =
+			formatDiscount.join(" ");
 
-		document.getElementById("gd__coupon_porcent").innerHTML = couponValue;
-		document.getElementById(
-			"gd__atp_saldo"
-		).innerHTML = `$${couponaAcummulated}`;
+		document.getElementById("gd__atp_saldo").innerHTML = `${generateSaldo}`;
 		document.getElementById("gd__alert").style.display = "block";
 	}
 }
 
 atp_localStorage = new SaldoLocalStorage();
 
-atp_localStorage.saveNewSaldoOnLocalStorage();
+atp_localStorage.initialize();

@@ -52,6 +52,9 @@ function inserUserInfo($coupon)
         global $wpdb;
         $totalLastOrder = TrendeeCoupons::$totalLastOrder;
 
+
+
+
         $wpdb->insert(
             'wp_coupons_data',
             array(

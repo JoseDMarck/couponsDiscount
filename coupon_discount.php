@@ -24,10 +24,10 @@ if (!class_exists('TrendeeCoupons')) {
 
         public static $totalLastOrder;
         public static $coupons = array();
+        public static $applyCouponData = array();
         public static $atp_saldo;
         public static $new_atp_saldo;
         public static $accumulatedSavings;
-        public static $applyCouponData = array();
 
         public function __construct()
         {
