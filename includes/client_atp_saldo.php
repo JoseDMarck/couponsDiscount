@@ -36,10 +36,10 @@ function set_atp_saldo()
             return false;
         endif;
 
-        foreach ($coupons as $coupon) {
+        foreach ($coupons as $coupon):
             $couponCode = $coupon["code"];
             update_atp_saldo($couponCode);
-        }
+        endforeach;
     }
     wp_die();
 }

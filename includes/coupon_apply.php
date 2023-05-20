@@ -1,21 +1,17 @@
 <?php
 
-add_action("init", "getCouponDiscount");
+add_action("woocommerce_thankyou", "getCouponDiscount");
 function getCouponDiscount()
 {
-
-    //print_r(TrendeeCoupons::$coupons);
-
     $coupons = TrendeeCoupons::$coupons;
 
     if (empty($coupons)):
         return false;
     endif;
 
-    foreach ($coupons as $coupon) {
+    $currentCoupon = 0;
 
-
-
+    foreach ($coupons as $coupon):
         $couponData = array(
             "minimum_ammount" => $coupon["minimum_amount"],
             "discount_available" => $coupon["amount"],
@@ -23,73 +19,27 @@ function getCouponDiscount()
             "coupon_type" => $coupon["type"],
         );
 
-        //print_r($couponData);
-        calculateDiscount($couponData);
+        $couponIsUsed = checkCouponIsAlreadyUse($coupon["code"]);
 
-    }
+        if (!empty($couponIsUsed)):
+            return false;
+        endif;
 
+        calculateDiscount($couponData, $currentCoupon);
+        $currentCoupon++;
 
+    endforeach;
 
-
-
-    // $couponData = $this->couponsData;
-    // $minimumCouponAmount = $couponData[0]['minimum_amount']; //  $400
-    // $discountAvailable = $couponData[0]['amount']; // 10% minimun
-    // $couponCode = $couponData[0]['name']; // 10% minimun
-    // $tp_saldo = $this->userData->tp_saldo; // $200
-    // $coupon_type = $couponData[0]['type'];
-    // $accumulatedSavings = $this->userData->accumulated_savings + $tp_saldo; // $200
-
-
-    // //Si el último pedido es mayor al monto minimo permitido en el cupon 
-    // if ($this->lastTotalOrder < $minimumCouponAmount):
-    //     return false;
-    // endif;
-
-    // // Si no tiene ahorro acumulado termina el proceso
-    // if ($tp_saldo === 0):
-    //     return false;
-    // endif;
-
-    // //Operaciones: Aplicar 10% (discountAvailable) sobre mi ultimo ahorro (accumulatedSavings)
-    // $obtainedDiscount = ($discountAvailable / 100) * $accumulatedSavings; //(10/100)*200
-
-    // //Sumar el descuento obtenido a mi ahorro acumulado 
-    // $discountApply = $obtainedDiscount + $accumulatedSavings;
-
-
-    // //Actualizar objeto de user 
-    // $this->userData->accumulated_savings = $discountApply;
-    // $this->userData->is_coupon_used = 1;
-    // $this->userData->coupon_code = $couponCode;
-    // $this->userData->coupon_value = $discountAvailable;
-    // $this->userData->coupon_type = $coupon_type;
-
-
-
-    //return true;
 }
 
 
-function calculateDiscount($coupon)
+
+
+function calculateDiscount($coupon, $currentCoupon)
 {
 
     $totalLastOrder = TrendeeCoupons::$totalLastOrder;
     $ATPSaldo = TrendeeCoupons::$atp_saldo;
-    $accumulatedSavings = TrendeeCoupons::$accumulatedSavings + $ATPSaldo;
-
-
-    echo "<br>";
-    echo "totalLastOrder" . " " . $totalLastOrder;
-    echo "<br>";
-
-    echo "ATPSaldo XXX" . " " . $ATPSaldo;
-    echo "<br>";
-
-    echo "coupon_code" . " " . $coupon["coupon_code"];
-    echo "<br>";
-    echo "minimum_ammount" . " " . $coupon["minimum_ammount"];
-
 
     //Si el último pedido es mayor al monto minimo permitido en el cupon 
     if ($totalLastOrder < $coupon["minimum_ammount"]):
@@ -97,9 +47,51 @@ function calculateDiscount($coupon)
     endif;
 
     // Si no tiene ahorro acumulado termina el proceso
-    if ($ATPSaldo === 0):
+    if ($ATPSaldo === 0 or $ATPSaldo === Null):
         return false;
     endif;
 
-    // echo "calculateDiscount()";
+    $accumulatedSaving = TrendeeCoupons::$accumulatedSavings + $ATPSaldo; // 0 + 200 = 200
+
+    // Sumar el descuento obtenido a mi ahorro acumulado 
+    if ($currentCoupon === 0):
+        $obtainedDiscount = ($coupon["discount_available"] / 100) * $accumulatedSaving; //(15/100)*200 = 39 
+        $discountApplied = $obtainedDiscount + $accumulatedSaving; // 30 + 200 = 230
+        $atp_current_saldo = $ATPSaldo;
+        TrendeeCoupons::$new_atp_saldo = $discountApplied; // 230
+    else:
+        $obtainedDiscount = ($coupon["discount_available"] / 100) * TrendeeCoupons::$new_atp_saldo; //(10/100)*230 = 23 
+        $discountApplied = TrendeeCoupons::$new_atp_saldo + $obtainedDiscount; // 230 + 23 = 253
+        $atp_current_saldo = TrendeeCoupons::$new_atp_saldo;
+        TrendeeCoupons::$new_atp_saldo = $discountApplied; // 253
+    endif;
+
+    array_push(
+        TrendeeCoupons::$applyCouponData,
+        array(
+            "accumulated_savings" => $discountApplied,
+            "obtained_discount" => $obtainedDiscount,
+            "atp_current_saldo" => $atp_current_saldo,
+            "coupon_code" => $coupon["coupon_code"],
+            "is_coupon_used" => 1,
+        )
+    );
+
+}
+
+
+/*----------------------------------------------------------------
+/* Revisamos si el usario ya uso el cupon
+/*----------------------------------------------------------------*/
+function checkCouponIsAlreadyUse($coupon)
+{
+    global $wpdb;
+    $result = $wpdb->get_results(
+        $wpdb->prepare(
+            "SELECT * FROM wp_coupons_data WHERE id_user = %d AND coupon_code = %s AND is_coupon_used = 1",
+            get_current_user_id(),
+            $coupon
+        )
+    );
+    return $result;
 }

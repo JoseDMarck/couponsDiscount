@@ -18,7 +18,7 @@ function getCouponsData()
     $i = 0;
     $couponLastSavin = array();
 
-    foreach ($coupons as $coupon) {
+    foreach ($coupons as $coupon):
 
         $coupon = new WC_Coupon($coupon->ID);
 
@@ -30,7 +30,8 @@ function getCouponsData()
             $couponLastSavin[$i]['usedBy'] = $coupon->get_used_by();
             $i++;
         endif;
-    }
+
+    endforeach;
 
     TrendeeCoupons::$coupons = $couponLastSavin;
 }

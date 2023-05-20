@@ -17,6 +17,8 @@ function createCouponsInfoTable()
             id_user INT(11) NOT NULL,
             last_purchase_mount FLOAT(20) NOT NULL,
             atp_saldo FLOAT(20) NOT NULL,
+            atp_current_saldo FLOAT(20) NOT NULL,
+            obtained_discount FLOAT(20) NOT NULL DEFAULT 0,
             accumulated_savings FLOAT(20) NOT NULL DEFAULT 0,
             is_coupon_used INT(20) NOT NULL DEFAULT 0,
             coupon_code VARCHAR(40) NOT NULL,

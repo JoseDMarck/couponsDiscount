@@ -9,7 +9,7 @@ function insertClientData()
         return false;
     endif;
 
-    foreach ($coupons as $coupon) {
+    foreach ($coupons as $coupon):
         $couponCode = $coupon["code"];
         $haveCoupon = checkIsUserHasCoupon($couponCode);
 
@@ -19,7 +19,8 @@ function insertClientData()
 
         $atpSaldo = $haveCoupon[0];
         TrendeeCoupons::$atp_saldo = $atpSaldo->atp_saldo;
-    }
+
+    endforeach;
 
 }
 

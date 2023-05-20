@@ -143,8 +143,7 @@ class CouponsDiscount
         endif;
 
         $i = 0;
-        foreach ($coupons_posts as $coupon_post) {
-
+        foreach ($coupons_posts as $coupon_post):
             if ($coupon_post->discount_type === 'discount_on_last_savings_porcent'):
                 $coupon = new WC_Coupon($coupon_post->post_name);
 
@@ -156,7 +155,7 @@ class CouponsDiscount
                 $couponLastSavin[$i]['usedBy'] = $coupon->get_used_by();
                 $i++;
             endif;
-        }
+        endforeach;
 
         if (empty($couponLastSavin)):
             return false;

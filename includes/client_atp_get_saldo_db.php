@@ -9,13 +9,15 @@ function getATPSaldoFromDB()
         return false;
     endif;
 
-    foreach ($coupons as $coupon) {
+    foreach ($coupons as $coupon):
+
         $couponCode = $coupon["code"];
         $haveCoupon = checkIsUserHasCoupon($couponCode);
 
         if (empty($haveCoupon)):
             inserUserInfo($coupon);
         endif;
-    }
+
+    endforeach;
 
 }
