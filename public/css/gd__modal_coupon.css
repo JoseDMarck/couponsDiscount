@@ -72,8 +72,15 @@
 }
 .coupon-card h3 {
 	font-size: 28px;
-	font-weight: 400;
 	line-height: 40px;
+	font-weight: 400;
+	color: #fff;
+}
+
+.coupon-card h4 {
+	font-size: 22px;
+	line-height: 30px;
+	font-weight: 400;
 	color: #fff;
 }
 .coupon-card p {
