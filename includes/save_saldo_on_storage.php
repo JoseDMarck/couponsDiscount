@@ -6,11 +6,10 @@ function saveSaldoOnLocalStorage()
 
     $coupons = TrendeeCoupons::$applyCouponData;
     $couponsApply = array();
-
     foreach ($coupons as $coupon):
 
         $discount = $coupon["discount_available"] . "%";
-        if (!$coupon["coupon_type"] === "discount_on_last_savings_porcent"):
+        if ($coupon["coupon_type"] !== "discount_on_last_savings_porcent"):
             $discount = "$" . $coupon["discount_available"];
         endif;
 
@@ -29,7 +28,7 @@ function saveSaldoOnLocalStorage()
         'wp_object',
         array(
             'ajax_url' => admin_url('admin-ajax.php'),
-            'generateSaldo' => "$" . TrendeeCoupons::$new_atp_saldo,
+            'generateSaldo' => TrendeeCoupons::$new_atp_saldo,
             'couponsApply' => $couponsApply
         )
     );

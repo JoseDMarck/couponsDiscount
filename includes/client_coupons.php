@@ -11,6 +11,7 @@ function getCouponsData()
     );
     $coupons = get_posts($args);
 
+
     if (empty($coupons)):
         return false;
     endif;
@@ -22,7 +23,7 @@ function getCouponsData()
 
         $coupon = new WC_Coupon($coupon->ID);
 
-        if ($coupon->discount_type === 'discount_on_last_savings_porcent'):
+        if ($coupon->discount_type === 'discount_on_last_savings_porcent' or $coupon->discount_type === 'discount_on_last_savings_fixed'):
             $couponLastSavin[$i]['code'] = $coupon->code;
             $couponLastSavin[$i]['type'] = $coupon->discount_type;
             $couponLastSavin[$i]['amount'] = $coupon->amount;
@@ -32,6 +33,8 @@ function getCouponsData()
         endif;
 
     endforeach;
+
+
 
     TrendeeCoupons::$coupons = $couponLastSavin;
 }

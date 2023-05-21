@@ -5,6 +5,9 @@ function insertClientData()
 {
     $coupons = TrendeeCoupons::$coupons;
 
+
+    //print_r($coupons);
+
     if (empty($coupons)):
         return false;
     endif;
@@ -51,9 +54,15 @@ function inserUserInfo($coupon)
     if (get_current_user_id() > 0):
         global $wpdb;
         $totalLastOrder = TrendeeCoupons::$totalLastOrder;
+        $couponValue = "";
 
+        if ($coupon["type"] === "discount_on_last_savings_porcent"):
+            $couponValue = $coupon["amount"] . "%";
 
+        else:
+            $couponValue = "$" . $coupon["amount"];
 
+        endif;
 
         $wpdb->insert(
             'wp_coupons_data',
@@ -61,7 +70,7 @@ function inserUserInfo($coupon)
                 'last_purchase_mount' => $totalLastOrder,
                 'coupon_code' => $coupon["code"],
                 'coupon_type' => $coupon["type"],
-                'coupon_value' => $coupon["amount"] . "%",
+                'coupon_value' => $couponValue,
                 'id_user' => get_current_user_id()
             ),
         );

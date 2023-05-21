@@ -9,11 +9,7 @@ class SaldoLocalStorage {
 		// localStorage.setItem("user_accumulated_savings", wp_object.newSaldo);
 
 		let disconts = wp_object.couponsApply;
-
 		this.getDiscountFormat(disconts);
-
-		// document.getElementById("gd__atp_saldo").innerHTML = `${generateSaldo}`;
-		// document.getElementById("gd__alert").style.display = "block";
 	}
 
 	getDiscountFormat(disconts) {
@@ -66,24 +62,36 @@ class SaldoLocalStorage {
 		});
 
 		document.getElementById(
-			"gd__coupon_porcent"
-		).innerHTML = `${porcentDiscountString}`;
-
-		document.getElementById("gd__atp_saldo").innerHTML = `${generateSaldo}`;
+			"gd__atp_saldo"
+		).innerHTML = `$${generateSaldo}`;
 		document.getElementById("gd__alert").style.display = "block";
 
+		if (porcentDiscount.length > 0) {
+			document.getElementById(
+				"gd__coupon_porcent"
+			).innerHTML = `${porcentDiscountString}`;
+		}
+
 		if (fixedDiscountNumber > 0) {
+			if (porcentDiscount.length !== 0) {
+				document.getElementById("gd__coupon_fixed_text").innerHTML =
+					"más un adicional de:";
+			}
+
 			document.getElementById(
 				"gd__coupon_fixed"
 			).innerHTML = `$${fixedDiscountNumber}`;
-
-			document.getElementById("gd__coupon_fixed_text").innerHTML =
-				"más un adicional de:";
 		}
 		console.log("porcentDiscount", porcentDiscount);
 		console.log("fixedDiscount", fixedDiscount);
 		console.log("porcentDiscountString", porcentDiscountString);
 		console.log("fixedDiscountNumber", fixedDiscountNumber);
+
+		this.saveSaldoOnLocalStorage();
+	}
+
+	saveSaldoOnLocalStorage() {
+		localStorage.setItem("ATP_saldo", wp_object.generateSaldo);
 	}
 }
 

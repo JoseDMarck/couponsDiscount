@@ -3,7 +3,7 @@
     <div class=gd__alert__content>
         <div class="coupon-card"> <img src="<?php echo plugins_url('coupons-discount/public/images/discount_image.png'); ?>" class="logo">
             <h3>¡Enhorabuena!, has ganado: </h3>
-            <h3><span id="gd__coupon_porcent">10%</span></h3>
+            <h3><span id="gd__coupon_porcent"></span></h3>
             <h4><span id="gd__coupon_fixed_text"></span> </h4>
             <h3><span id="gd__coupon_fixed"></span></h3>
             <h3>sobre tu ahorro acumulado</h3>
