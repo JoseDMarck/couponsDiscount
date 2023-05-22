@@ -55,6 +55,7 @@ if (!class_exists('TrendeeCoupons')) {
             require_once PLUGIN_PATH . 'includes/coupon_apply.php';
             require_once PLUGIN_PATH . 'includes/client_data_update_bd.php';
             require_once PLUGIN_PATH . 'includes/save_saldo_on_storage.php';
+            require_once PLUGIN_PATH . 'includes/update_saldo_on_db.php';
         }
 
     }
