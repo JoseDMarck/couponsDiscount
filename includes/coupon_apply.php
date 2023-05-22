@@ -27,9 +27,14 @@ function getCouponDiscount()
             return false;
         endif;
 
-        calculateDiscount($couponData, $currentCoupon);
+        print_r(checkCouponLimit($couponData));
 
-        $currentCoupon++;
+
+        if (checkCouponLimit($couponData)):
+            calculateDiscount($couponData, $currentCoupon);
+            $currentCoupon++;
+        endif;
+
 
     endforeach;
 
@@ -45,15 +50,15 @@ function calculateDiscount($coupon, $currentCoupon)
     $totalLastOrder = TrendeeCoupons::$totalLastOrder;
     $ATPSaldo = TrendeeCoupons::$atp_saldo;
     $couponType = $coupon["coupon_type"];
-    //Si el último pedido es mayor al monto minimo permitido en el cupon 
-    if ($totalLastOrder < $coupon["minimum_ammount"]):
-        return false;
-    endif;
+
+
 
     // Si no tiene ahorro acumulado termina el proceso
     if ($ATPSaldo === 0 or $ATPSaldo === Null):
         return false;
     endif;
+
+
 
     $accumulatedSaving = TrendeeCoupons::$accumulatedSavings + $ATPSaldo; // 0 + 200 = 200
 
@@ -77,6 +82,7 @@ function calculateDiscount($coupon, $currentCoupon)
         }
 
         $discountApplied = TrendeeCoupons::$new_atp_saldo + $obtainedDiscount; // 230 + 23 = 253
+        //$atp_current_saldo = TrendeeCoupons::$new_atp_saldo;
         $atp_current_saldo = TrendeeCoupons::$new_atp_saldo;
         TrendeeCoupons::$new_atp_saldo = $discountApplied; // 253
     endif;
@@ -96,6 +102,23 @@ function calculateDiscount($coupon, $currentCoupon)
     );
 
 }
+
+
+/*----------------------------------------------------------------
+/* Revisamos si la ultima compra es mayor que limite del cupon
+/*----------------------------------------------------------------*/
+function checkCouponLimit($coupon)
+{
+    $totalLastOrder = TrendeeCoupons::$totalLastOrder;
+
+    if ($totalLastOrder < $coupon["minimum_ammount"]):
+        return false;
+    endif;
+
+    return true;
+}
+
+
 
 
 /*----------------------------------------------------------------
