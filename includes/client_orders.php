@@ -18,6 +18,7 @@ function getClientLastTotalOrder()
 
     $orders = get_posts($args);
 
+
     if (empty($orders)):
         return false;
     endif;

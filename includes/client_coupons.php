@@ -19,6 +19,7 @@ function getCouponsData()
     $i = 0;
     $couponLastSavin = array();
 
+
     foreach ($coupons as $coupon):
 
         $coupon = new WC_Coupon($coupon->ID);
@@ -33,6 +34,7 @@ function getCouponsData()
         endif;
 
     endforeach;
+
 
 
 

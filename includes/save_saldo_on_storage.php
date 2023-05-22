@@ -6,6 +6,8 @@ function saveSaldoOnLocalStorage()
 
     $coupons = TrendeeCoupons::$applyCouponData;
     $couponsApply = array();
+
+
     foreach ($coupons as $coupon):
 
         $discount = $coupon["discount_available"] . "%";

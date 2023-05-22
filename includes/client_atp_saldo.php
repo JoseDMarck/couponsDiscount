@@ -52,7 +52,7 @@ function update_atp_saldo($couponCode)
     $wpdb->update(
         'wp_coupons_data',
         array(
-            'atp_saldo' => $atp_saldo,
+            'atp_saldo' => round($atp_saldo, 2),
         ),
         array(
             'id_user' => get_current_user_id(),
