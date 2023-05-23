@@ -30,7 +30,8 @@ function saveSaldoOnLocalStorage()
         'wp_object',
         array(
             'ajax_url' => admin_url('admin-ajax.php'),
-            'generateSaldo' => TrendeeCoupons::$new_atp_saldo,
+            //'generateSaldo' => TrendeeCoupons::$new_atp_saldo,
+            'generateSaldo' => TrendeeCoupons::$meta_value_saldo,
             'couponsApply' => $couponsApply
         )
     );

@@ -55,11 +55,6 @@ function calculateDiscount($coupon, $currentCoupon)
     $couponType = $coupon["coupon_type"];
 
 
-    // Si no tiene ahorro acumulado termina el proceso
-    if ($ATPSaldo === 0 or $ATPSaldo === Null):
-        return false;
-    endif;
-
 
 
     $accumulatedSaving = TrendeeCoupons::$accumulatedSavings + $ATPSaldo; // 0 + 200 = 200
@@ -117,12 +112,21 @@ function checkCouponLimit($coupon)
 {
     $totalLastOrder = TrendeeCoupons::$totalLastOrder;
 
+    $ATPSaldo = TrendeeCoupons::$atp_saldo;
 
     if ($totalLastOrder < $coupon["minimum_ammount"]):
         return false;
     endif;
 
+    // Si no tiene ahorro acumulado termina el proceso
+    if ($ATPSaldo == 0 or $ATPSaldo == Null):
+        return false;
+    endif;
+
+
     return true;
+
+
 }
 
 

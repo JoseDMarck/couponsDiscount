@@ -87,7 +87,7 @@ class SaldoLocalStorage {
 		console.log("porcentDiscountString", porcentDiscountString);
 		console.log("fixedDiscountNumber", fixedDiscountNumber);
 
-		this.saveSaldoOnLocalStorage();
+		//this.saveSaldoOnLocalStorage();
 	}
 
 	saveSaldoOnLocalStorage() {

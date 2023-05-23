@@ -29,6 +29,8 @@ if (!class_exists('TrendeeCoupons')) {
         public static $new_atp_saldo;
         public static $accumulatedSavings;
 
+        public static $meta_value_saldo;
+
         public function __construct()
         {
             define("PLUGIN_PATH", plugin_dir_path(__FILE__));
@@ -40,6 +42,7 @@ if (!class_exists('TrendeeCoupons')) {
             require_once PLUGIN_PATH . 'includes/register_activation_hook.php';
             require_once PLUGIN_PATH . 'includes/register_coupons_types.php';
             require_once PLUGIN_PATH . 'includes/client_atp_saldo.php';
+
             require_once PLUGIN_PATH . 'shortcodes/coupon_modal.php';
         }
 
@@ -54,8 +57,8 @@ if (!class_exists('TrendeeCoupons')) {
         {
             require_once PLUGIN_PATH . 'includes/coupon_apply.php';
             require_once PLUGIN_PATH . 'includes/client_data_update_bd.php';
-            require_once PLUGIN_PATH . 'includes/save_saldo_on_storage.php';
             require_once PLUGIN_PATH . 'includes/update_saldo_on_db.php';
+            require_once PLUGIN_PATH . 'includes/save_saldo_on_storage.php';
         }
 
     }
