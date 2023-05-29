@@ -40,9 +40,9 @@ if (!class_exists('TrendeeCoupons')) {
         {
             require_once PLUGIN_PATH . 'includes/register_scritps.php';
             require_once PLUGIN_PATH . 'includes/register_activation_hook.php';
+            require_once PLUGIN_PATH . 'includes/register_admin_menu.php';
             require_once PLUGIN_PATH . 'includes/register_coupons_types.php';
             require_once PLUGIN_PATH . 'includes/client_atp_saldo.php';
-
             require_once PLUGIN_PATH . 'shortcodes/coupon_modal.php';
         }
 

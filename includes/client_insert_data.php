@@ -51,6 +51,8 @@ function checkIsUserHasCoupon($coupon)
 function inserUserInfo($coupon)
 {
 
+    $current_user = wp_get_current_user();
+
     if (get_current_user_id() > 0):
         global $wpdb;
         $totalLastOrder = TrendeeCoupons::$totalLastOrder;
@@ -71,7 +73,8 @@ function inserUserInfo($coupon)
                 'coupon_code' => $coupon["code"],
                 'coupon_type' => $coupon["type"],
                 'coupon_value' => $couponValue,
-                'id_user' => get_current_user_id()
+                'id_user' => get_current_user_id(),
+                "user_name" => $current_user->user_firstname
             ),
         );
     endif;

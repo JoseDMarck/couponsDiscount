@@ -15,6 +15,7 @@ function createCouponsInfoTable()
     $sql = "CREATE TABLE  $table (
             id BIGINT(20) NOT NULL auto_increment,
             id_user INT(11) NOT NULL,
+            user_name VARCHAR(40) NOT NULL,
             last_purchase_mount FLOAT(20) NOT NULL,
             atp_saldo FLOAT(20) NOT NULL,
             atp_current_saldo FLOAT(20) NOT NULL,

@@ -1,0 +1,78 @@
+.gd__green {
+	background-color: #00af80;
+}
+.gd__text-white {
+	color: #fff;
+}
+
+.gd__adminPage {
+	width: 100%;
+	height: auto;
+	margin: 0 auto;
+
+	padding: 20px 0px 20px 0px;
+}
+
+.gd__content {
+	width: 98%;
+	height: auto;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	border-top: 1px solid #2ac489;
+	border-left: 1px solid #2ac489;
+	border-right: 1px solid #2ac489;
+}
+
+.gd__content--small {
+	width: 200px;
+}
+
+.gd__content:last-child {
+	border-bottom: 1px solid #2ac489;
+}
+.gd__content--no-border-bottom {
+	border-bottom: 0px solid #2ac489;
+}
+
+.gd__content__title {
+	width: 200px;
+	height: auto;
+	white-space: nowrap;
+	text-overflow: ellipsis;
+	overflow: hidden;
+	text-align: center;
+	font-weight: 800;
+	padding: 10px;
+	border-right: 1px solid #2ac489;
+}
+
+.gd__content__title--height {
+	font-weight: 400;
+}
+.gd__status--active {
+	color: #00af80;
+}
+
+.gd__status--used {
+	color: #e0464d;
+}
+
+.gd__content__title:last-child {
+	border-right: 0px solid #2ac489;
+}
+
+.gd__button {
+	width: 160px;
+	height: auto;
+	border: 0px;
+	padding: 10px;
+	margin-top: 10px;
+	cursor: pointer;
+	border-radius: 6px;
+}
+
+.gd__button--truncated {
+	color: #fff;
+	background-color: #e0464d;
+}

@@ -15,7 +15,7 @@ function getSaldoOnMetaKey()
     );
 
     $atpData = $result[0];
-    print_r($atpData->meta_value);
+    //print_r($atpData->meta_value);
     updateSaldoOnMetaKey($atpData->meta_value);
     //return $result;
 

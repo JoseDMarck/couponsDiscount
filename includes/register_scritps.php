@@ -5,6 +5,9 @@ function wpdocs_enqueue_custom_admin_style()
 {
     wp_register_style('custom_wp_admin_css', plugin_dir_url(TC__FILE__) . 'public/css/gd__modal_coupon.css', false, '1.0.0');
     wp_enqueue_style('custom_wp_admin_css');
+
+    wp_register_style('custom_page_admin_css', plugin_dir_url(TC__FILE__) . 'admin/css/gd__page_admin.css', false, '1.0.0');
+    wp_enqueue_style('custom_page_admin_css');
 }
 
 add_action('init', 'wpdocs_enqueue_magic_library');
