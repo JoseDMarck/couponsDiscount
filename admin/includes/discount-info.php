@@ -12,8 +12,20 @@ $discountsATP = $wpdb->get_results(
     )
 );
 ?>
+<div class="gd__alert" id="gd__alert--truncate">
+    <div class="gd__alert__close" id="gd__alert__close--truncate"></div>
+    <div class=gd__alert__content>
+        <div class="coupon-card">
+            <h3>¡Se han limipado los datos! </h3>
+            <p>Todos los datos de la tabla de cupones han sido eliminados</p>
+            <div class="coupon-row">
+                <span id="cpnBtn"> Aceptar </span>
+            </div>
+        </div>
+    </div>
+</div>
 <main class="gd__adminPage">
-    <button class="gd__button gd__button--truncated"> Limpiar datos </button>
+    <button class="gd__button  gd__button--truncated" id="gd__button__truncated"> Limpiar datos </button>
     <h2>Listado de cupones y usuarios:</h2>
     <div class="gd__content gd__content--no-border-bottom gd__green gd__text-white">
         <div class="gd__content__title"> Usuario: </div>

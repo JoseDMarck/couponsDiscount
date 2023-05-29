@@ -15,18 +15,12 @@ function getSaldoOnMetaKey()
     );
 
     $atpData = $result[0];
-    //print_r($atpData->meta_value);
     updateSaldoOnMetaKey($atpData->meta_value);
-    //return $result;
-
 }
 
 function updateSaldoOnMetaKey($metaValueSaldo)
 {
     global $wpdb;
-
-    //print_r("updateSaldoOnMetaKey");
-
     $atpSaldo = TrendeeCoupons::$new_atp_saldo;
     $newATPSaldo = $metaValueSaldo + $atpSaldo;
 

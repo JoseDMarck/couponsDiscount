@@ -5,9 +5,6 @@ add_action('woocommerce_thankyou', 'updateClientData');
 function updateClientData()
 {
 
-
-
-
     $coupons = TrendeeCoupons::$applyCouponData;
 
     if (empty($coupons)):
