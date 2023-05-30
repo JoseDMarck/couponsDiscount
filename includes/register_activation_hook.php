@@ -22,6 +22,7 @@ function createCouponsInfoTable()
             obtained_discount FLOAT(20) NOT NULL DEFAULT 0,
             accumulated_savings FLOAT(20) NOT NULL DEFAULT 0,
             is_coupon_used INT(20) NOT NULL DEFAULT 0,
+            is_coupon_expired INT(20) NOT NULL DEFAULT 0,
             coupon_code VARCHAR(40) NOT NULL,
             coupon_value VARCHAR(40) NOT NULL DEFAULT 0,
             coupon_type VARCHAR(40) NOT NULL,

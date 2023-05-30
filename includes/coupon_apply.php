@@ -5,7 +5,6 @@ add_action("woocommerce_thankyou", "getCouponDiscount");
 function getCouponDiscount()
 {
 
-
     $coupons = TrendeeCoupons::$coupons;
 
     //print_r($coupons);
@@ -16,21 +15,25 @@ function getCouponDiscount()
 
     $currentCoupon = 0;
 
-
     foreach ($coupons as $coupon):
         $couponData = array(
             "minimum_ammount" => $coupon["minimum_amount"],
             "discount_available" => $coupon["amount"],
             "coupon_code" => $coupon["code"],
             "coupon_type" => $coupon["type"],
+            "date_expires" => $coupon["date_expires"],
         );
+
 
 
         $couponIsUsed = checkCouponIsAlreadyUse($coupon["code"]);
 
+
         if (!empty($couponIsUsed)):
             return false;
         endif;
+
+
 
 
         if (checkCouponLimit($couponData)):
@@ -39,23 +42,19 @@ function getCouponDiscount()
         endif;
 
 
+
+
+
     endforeach;
 
 }
 
-
-
-
 function calculateDiscount($coupon, $currentCoupon)
 {
-
 
     $totalLastOrder = TrendeeCoupons::$totalLastOrder;
     $ATPSaldo = TrendeeCoupons::$atp_saldo;
     $couponType = $coupon["coupon_type"];
-
-
-
 
     $accumulatedSaving = TrendeeCoupons::$accumulatedSavings + $ATPSaldo; // 0 + 200 = 200
 
@@ -71,7 +70,6 @@ function calculateDiscount($coupon, $currentCoupon)
         $atp_current_saldo = $ATPSaldo;
 
         TrendeeCoupons::$new_atp_saldo = round($discountApplied, 2); // 230
-
 
     else:
 
@@ -123,13 +121,19 @@ function checkCouponLimit($coupon)
         return false;
     endif;
 
+    //Revisamos si el cupon ha expirado
+    if (!empty($coupon["date_expires"])):
+        $couponIsExpired = checkIsCouponExpired($coupon["date_expires"]);
+        if ($couponIsExpired === "expired"):
+            return false;
+        endif;
+    endif;
+
 
     return true;
 
 
 }
-
-
 
 
 /*----------------------------------------------------------------
@@ -149,4 +153,20 @@ function checkCouponIsAlreadyUse($coupon)
 
 
     return $result;
+}
+
+
+/*----------------------------------------------------------------
+/* Revisamos si el usario ya expiro
+/*----------------------------------------------------------------*/
+function checkIsCouponExpired($expiredDate)
+{
+
+    $expiration_timestamp = $expiredDate->getTimestamp();
+    if ($expiration_timestamp > time()):
+        return "valid"; // Valido
+    else:
+        return "expired"; //Expired
+    endif;
+
 }

@@ -20,17 +20,23 @@ function getCouponsData()
     $couponLastSavin = array();
 
 
+
+
     foreach ($coupons as $coupon):
+
 
         $coupon = new WC_Coupon($coupon->ID);
 
+
         if ($coupon->discount_type === 'discount_on_last_savings_porcent' or $coupon->discount_type === 'discount_on_last_savings_fixed'):
             $couponLastSavin[$i]['code'] = $coupon->code;
+            $couponLastSavin[$i]['date_expires'] = $coupon->get_date_expires();
             $couponLastSavin[$i]['type'] = $coupon->discount_type;
             $couponLastSavin[$i]['amount'] = $coupon->amount;
             $couponLastSavin[$i]['minimum_amount'] = $coupon->minimum_amount;
             $couponLastSavin[$i]['usedBy'] = $coupon->get_used_by();
             $i++;
+
         endif;
 
     endforeach;
