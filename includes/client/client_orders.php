@@ -3,6 +3,9 @@
 add_action('init', 'getClientLastTotalOrder');
 function getClientLastTotalOrder()
 {
+
+
+
     $args = array(
         'post_type' => 'shop_order',
         'posts_per_page' => -1,
@@ -17,7 +20,6 @@ function getClientLastTotalOrder()
     );
 
     $orders = get_posts($args);
-
 
     if (empty($orders)):
         return false;

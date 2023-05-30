@@ -1,7 +1,6 @@
 <?php
 add_action('admin_menu', 'trendee_coupons_menu');
 
-
 function trendee_coupons_menu()
 {
 

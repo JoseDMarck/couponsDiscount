@@ -38,29 +38,32 @@ if (!class_exists('TrendeeCoupons')) {
         }
         public function initialize()
         {
-            require_once PLUGIN_PATH . 'includes/register_admin_menu.php';
-            require_once PLUGIN_PATH . 'includes/register_scritps.php';
-            require_once PLUGIN_PATH . 'includes/truncate_coupons_data.php';
-            require_once PLUGIN_PATH . 'includes/register_activation_hook.php';
-            require_once PLUGIN_PATH . 'includes/register_coupons_types.php';
-            require_once PLUGIN_PATH . 'includes/client_atp_saldo.php';
+            require_once PLUGIN_PATH . 'includes/initialized/register_admin_menu.php';
+            require_once PLUGIN_PATH . 'includes/initialized/register_scritps.php';
+            require_once PLUGIN_PATH . 'includes/initialized/truncate_coupons_data.php';
+            require_once PLUGIN_PATH . 'includes/initialized/update_coupons_data.php';
+            require_once PLUGIN_PATH . 'includes/initialized/register_activation_hook.php';
+            require_once PLUGIN_PATH . 'includes/initialized/register_coupons_types.php';
+            require_once PLUGIN_PATH . 'includes/initialized/client_atp_saldo.php';
             require_once PLUGIN_PATH . 'shortcodes/coupon_modal.php';
 
         }
 
         public function getClientData()
         {
-            require_once PLUGIN_PATH . 'includes/client_orders.php';
-            require_once PLUGIN_PATH . 'includes/client_coupons.php';
-            require_once PLUGIN_PATH . 'includes/client_insert_data.php';
+            require_once PLUGIN_PATH . 'includes/client/client_orders.php';
+            require_once PLUGIN_PATH . 'includes/client/client_coupons.php';
+            require_once PLUGIN_PATH . 'includes/client/client_insert_data.php';
         }
 
         public function applyCoupons()
         {
-            require_once PLUGIN_PATH . 'includes/coupon_apply.php';
-            require_once PLUGIN_PATH . 'includes/client_data_update_bd.php';
-            require_once PLUGIN_PATH . 'includes/update_saldo_on_db.php';
-            require_once PLUGIN_PATH . 'includes/save_saldo_on_storage.php';
+            require_once PLUGIN_PATH . 'includes/operations/coupon_apply.php';
+            require_once PLUGIN_PATH . 'includes/operations/client_data_update_bd.php';
+            require_once PLUGIN_PATH . 'includes/operations/update_saldo_on_db.php';
+            require_once PLUGIN_PATH . 'includes/operations/save_saldo_on_storage.php';
+
+
         }
 
     }

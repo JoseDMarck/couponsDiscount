@@ -1,16 +1,15 @@
 <?php
 
 add_action('init', "getCouponsData");
-
 function getCouponsData()
 {
+
     $args = array(
         'post_type' => 'shop_coupon',
         'post_status' => 'publish',
         'posts_per_page' => -1
     );
     $coupons = get_posts($args);
-
 
     if (empty($coupons)):
         return false;
@@ -19,14 +18,9 @@ function getCouponsData()
     $i = 0;
     $couponLastSavin = array();
 
-
-
-
     foreach ($coupons as $coupon):
 
-
         $coupon = new WC_Coupon($coupon->ID);
-
 
         if ($coupon->discount_type === 'discount_on_last_savings_porcent' or $coupon->discount_type === 'discount_on_last_savings_fixed'):
             $couponLastSavin[$i]['code'] = $coupon->code;
@@ -41,8 +35,6 @@ function getCouponsData()
 
     endforeach;
 
-
-
-
     TrendeeCoupons::$coupons = $couponLastSavin;
+
 }

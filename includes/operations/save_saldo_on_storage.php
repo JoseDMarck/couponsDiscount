@@ -7,7 +7,6 @@ function saveSaldoOnLocalStorage()
     $coupons = TrendeeCoupons::$applyCouponData;
     $couponsApply = array();
 
-
     foreach ($coupons as $coupon):
 
         $discount = $coupon["discount_available"] . "%";
@@ -21,7 +20,6 @@ function saveSaldoOnLocalStorage()
         );
 
     endforeach;
-
 
     wp_enqueue_script('coupon_discount_save_saldo', plugins_url('/public/js/gd__save_saldo.js', TC__FILE__), array('jquery'), '20200110');
 

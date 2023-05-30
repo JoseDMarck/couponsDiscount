@@ -1,8 +1,6 @@
 <?php
 
 add_action('woocommerce_thankyou', 'getSaldoOnMetaKey');
-
-
 function getSaldoOnMetaKey()
 {
     global $wpdb;

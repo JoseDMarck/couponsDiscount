@@ -5,7 +5,6 @@ function insertClientData()
 {
     $coupons = TrendeeCoupons::$coupons;
 
-
     //print_r($coupons);
 
     if (empty($coupons)):
@@ -77,6 +76,7 @@ function inserUserInfo($coupon)
                 "user_name" => $current_user->user_firstname
             ),
         );
+
     endif;
 
 }

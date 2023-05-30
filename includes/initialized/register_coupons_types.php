@@ -8,7 +8,6 @@ function setNewCouponTypes($discount_types)
     return $discount_types;
 }
 
-
 add_filter('woocommerce_coupon_discount_types', 'setFixedNewCouponTypes');
 
 function setFixedNewCouponTypes($discount_types)

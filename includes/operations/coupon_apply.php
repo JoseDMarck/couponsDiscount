@@ -7,8 +7,6 @@ function getCouponDiscount()
 
     $coupons = TrendeeCoupons::$coupons;
 
-    //print_r($coupons);
-
     if (empty($coupons)):
         return false;
     endif;
@@ -16,6 +14,7 @@ function getCouponDiscount()
     $currentCoupon = 0;
 
     foreach ($coupons as $coupon):
+
         $couponData = array(
             "minimum_ammount" => $coupon["minimum_amount"],
             "discount_available" => $coupon["amount"],
@@ -24,26 +23,16 @@ function getCouponDiscount()
             "date_expires" => $coupon["date_expires"],
         );
 
-
-
         $couponIsUsed = checkCouponIsAlreadyUse($coupon["code"]);
-
 
         if (!empty($couponIsUsed)):
             return false;
         endif;
 
-
-
-
         if (checkCouponLimit($couponData)):
             calculateDiscount($couponData, $currentCoupon);
             $currentCoupon++;
         endif;
-
-
-
-
 
     endforeach;
 
@@ -52,7 +41,6 @@ function getCouponDiscount()
 function calculateDiscount($coupon, $currentCoupon)
 {
 
-    $totalLastOrder = TrendeeCoupons::$totalLastOrder;
     $ATPSaldo = TrendeeCoupons::$atp_saldo;
     $couponType = $coupon["coupon_type"];
 
@@ -98,8 +86,6 @@ function calculateDiscount($coupon, $currentCoupon)
         )
     );
 
-
-
 }
 
 
@@ -128,10 +114,7 @@ function checkCouponLimit($coupon)
             return false;
         endif;
     endif;
-
-
     return true;
-
 
 }
 
