@@ -42,6 +42,7 @@ if (!class_exists('TrendeeCoupons')) {
             require_once PLUGIN_PATH . 'includes/initialized/register_scritps.php';
             require_once PLUGIN_PATH . 'includes/initialized/truncate_coupons_data.php';
             require_once PLUGIN_PATH . 'includes/initialized/update_coupons_data.php';
+            require_once PLUGIN_PATH . 'includes/initialized/delete_coupons_data.php';
             require_once PLUGIN_PATH . 'includes/initialized/register_activation_hook.php';
             require_once PLUGIN_PATH . 'includes/initialized/register_coupons_types.php';
             require_once PLUGIN_PATH . 'includes/initialized/client_atp_saldo.php';

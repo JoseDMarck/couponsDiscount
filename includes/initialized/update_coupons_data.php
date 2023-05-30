@@ -1,7 +1,7 @@
 <?php
 
-add_action('woocommerce_coupon_options_save', 'my_coupon_update', 10);
-function my_coupon_update()
+add_action('woocommerce_coupon_options_save', 'gd__coupon_update', 10);
+function gd__coupon_update()
 {
 
 
