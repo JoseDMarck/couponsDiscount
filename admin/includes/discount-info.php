@@ -12,9 +12,9 @@ $discountsATP = $wpdb->get_results(
     )
 );
 ?>
-<div class="gd__alert" id="gd__alert--truncate">
+<div class="gd__alert" id="gd__alert_truncate">
     <div class="gd__alert__close" id="gd__alert__close--truncate"></div>
-    <div class=gd__alert__content>
+    <div class="gd__alert__content magictime puffIn">
         <div class="coupon-card">
             <h3>¡Se han limipado los datos! </h3>
             <p>Todos los datos de la tabla de cupones han sido eliminados</p>

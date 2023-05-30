@@ -1,6 +1,6 @@
 <?php
 
-add_action('wp_ajax_truncate_coupons_data', 'truncate_coupons_data', 10);
+add_action('wp_ajax_truncate_coupons_data', 'truncate_coupons_data');
 function truncate_coupons_data()
 {
     global $wpdb;

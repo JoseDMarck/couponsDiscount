@@ -22,7 +22,7 @@ function wpdocs_enqueue_page_admin_style()
     wp_enqueue_style('custom_page_admin_css');
 }
 
-add_action('init', 'wpdocs_enqueue_page_admin_js', 10);
+add_action('admin_init', 'wpdocs_enqueue_page_admin_js', 10);
 function wpdocs_enqueue_page_admin_js()
 {
     wp_enqueue_script('gd__page_admin', plugins_url('/admin/js/gd__page_admin.js', TC__FILE__), array(), '001');
